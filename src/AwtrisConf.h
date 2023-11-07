@@ -10,10 +10,10 @@
 // Pin for led matrix
 #define MATRIX_PIN        32  // Digital IO pin connected to the NeoPixels.
 // Matrix size
-#define MATRIX_WIDTH      8
-#define MATRIX_HEIGHT     32
+#define MATRIX_WIDTH      32
+#define MATRIX_HEIGHT     8
 
 // Uncomment to enable logs on serial out
-//#define SERIAL_OUT
+#define SERIAL_OUT
 
 #endif

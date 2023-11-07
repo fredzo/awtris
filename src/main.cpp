@@ -61,10 +61,11 @@ static int num_run = 0, num_updates = 0;
 
 CRGB matrixleds[NUMMATRIX];
 
-FastLED_NeoMatrix *matrix = new FastLED_NeoMatrix(matrixleds, 8, MATRIX_WIDTH, MATRIX_HEIGHT/8, 1, 
+FastLED_NeoMatrix *matrix = /*new FastLED_NeoMatrix(matrixleds, 8, MATRIX_WIDTH, MATRIX_HEIGHT/8, 1, 
   NEO_MATRIX_TOP     + NEO_MATRIX_RIGHT +
     NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG + 
-    NEO_TILE_TOP + NEO_TILE_LEFT +  NEO_TILE_PROGRESSIVE);
+    NEO_TILE_TOP + NEO_TILE_LEFT +  NEO_TILE_PROGRESSIVE);*/
+new FastLED_NeoMatrix(matrixleds, 32, 8, NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG);    
 
 const uint16_t colors[] = {
   matrix->Color(255, 0, 0), matrix->Color(0, 255, 0), matrix->Color(0, 0, 255) };
@@ -73,12 +74,17 @@ const uint16_t colors[] = {
 //////////// Initialisation du programme //////////////
 
 void setup() {
+#ifdef SERIAL_OUT
+  Serial.begin(115200);
+  Serial.println("Démarrage Awtrix !");
+#endif
+  pinMode(BUZZER_PIN, OUTPUT);
+  digitalWrite(BUZZER_PIN,0);
   pinMode(CENTER_BUTTON_PIN, INPUT_PULLUP);
   wiimote.init();
   if (! logging)
       wiimote.addFilter(ACTION_IGNORE, FILTER_ACCEL); // optional
   
-  Serial.println("Started");
   last_ms = millis();
 
   FastLED.addLeds<NEOPIXEL, MATRIX_PIN>(matrixleds, MATRIX_WIDTH * MATRIX_HEIGHT);
@@ -88,10 +94,6 @@ void setup() {
   matrix->setTextColor(colors[0]);
 
 
-#ifdef SERIAL_OUT
-  Serial.begin(115200);
-  Serial.println("Démarrage Awtrix !");
-#endif
 }
 
 //////////// Boucle principale //////////////
@@ -99,7 +101,8 @@ void setup() {
 // Button detection
 boolean oldButtonState = HIGH;
 
-int x    = MATRIX_WIDTH;
+int x    = 0;
+int y    = 0;
 int pass = 0;
 
 
@@ -184,6 +187,19 @@ void loop() {
     }
 
   matrix->fillScreen(0);
+/*  matrix->drawPixel(x,y,colors[pass]);
+  x++;
+  if(x>=MATRIX_WIDTH)
+  {
+    x = 0;
+    y++;
+    if(y>=MATRIX_HEIGHT)
+    {
+      y=0;
+      if(++pass >= 3) pass = 0;
+    }
+  } */
+
   matrix->setCursor(x, 0);
   matrix->print(F("Howdy"));
   if(--x < -36) {
@@ -191,12 +207,14 @@ void loop() {
     if(++pass >= 3) pass = 0;
     matrix->setTextColor(colors[pass]);
   }
+
+
   matrix->show();
-//  delay(100);
+  delay(100);
 
 
 
-    delay(10);
+//    delay(10);
 
 }
 
