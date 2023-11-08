@@ -473,20 +473,20 @@ void tetrisLoop()
           if ( currentInput == ROTATE )
           {
             currentInput = NONE;
-            if ((CurrentBlock.GetCurrentFrame() % 2) == 1)
+            if ((CurrentBlock.GetCurrentFrame() % 2) == 1)  // Frame 1 or 3
             {
-              if (CurrentBlock.GetXChange() == 0)
+              if (CurrentBlock.GetXChange() == 0) // I shape, vertical
                 CurrentBlock.m_X = _min(CurrentBlock.m_X, SCREEN_WIDTH - TETRIS_SPR_WIDTH);
-              else if ((CurrentBlock.GetXChange() != 3) && (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MAX))
+              else if ((CurrentBlock.GetXChange() != 3) && (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MAX)) // Not O shape and near border => give some space
                 --CurrentBlock.m_X;
             }
-            CurrentBlock.IncreaseFrame();
+            CurrentBlock.IncreaseFrame(); // Rotate to next frame
             Sprites->DetectCollisions(&CurrentBlock);
             if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
               CurrentBlock.DecreaseFrame();
           }
           
-          if ( currentInput == LEFT && (! (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MIN)) )
+          if ( currentInput == LEFT && (! (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MIN)) ) // Go left and check if not already on the border
           {
             currentInput = NONE;
             CurrentBlock.m_X--;
@@ -495,7 +495,7 @@ void tetrisLoop()
               CurrentBlock.m_X++;
           }
           
-          else if ( currentInput == RIGHT && (! (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MAX)) )
+          else if ( currentInput == RIGHT && (! (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MAX)) ) // Go right and check if not already on the border
           {
             currentInput = NONE;
             CurrentBlock.m_X++;
@@ -504,37 +504,37 @@ void tetrisLoop()
               CurrentBlock.m_X--;
           }
           
-          if ( currentInput == DOWN )
+          if ( currentInput == DOWN ) // Go down
           {
             currentInput = NONE;
-            CurrentBlock.SetYCounter(1);
+            CurrentBlock.SetYCounter(1); // Force y increment on next cycle
           }
             
           // Do block checks for bottom or collision
-          if (CurrentBlock.GetYCounter() <= 1)
+          if (CurrentBlock.GetYCounter() <= 1) // Current block has to go down
           {
-            if (CurrentBlock.GetFlags() & SPRITE_EDGE_Y_MIN)
-              NextBlock = true;
+            if (CurrentBlock.GetFlags() & SPRITE_EDGE_Y_MAX)
+              NextBlock = true; // Block as reached the bottom => send next block
             else
             {
-              --CurrentBlock.m_Y;
+              ++CurrentBlock.m_Y; // Try going down and check for collision
               Sprites->DetectCollisions(&CurrentBlock);
-              ++CurrentBlock.m_Y;
+              --CurrentBlock.m_Y;
               if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
               {
                 // Block has collided check for game over
-                int16_t MaxY = SCREEN_HEIGHT - 2;
+                int16_t MinY = 2;
                 if ((CurrentBlock.GetCurrentFrame() % 2) == 1)
                 {
-                  if (CurrentBlock.GetXChange() == 0)
-                    MaxY -= 2;
-                  else if (CurrentBlock.GetXChange() != 3)
-                    MaxY -= 1;
+                  if (CurrentBlock.GetXChange() == 0) // I shape
+                    MinY += 2;
+                  else if (CurrentBlock.GetXChange() != 3) // Not O shape
+                    MinY += 1;
                 }
-                else if (CurrentBlock.GetXChange() == 0)
-                    ++MaxY;
-                if (CurrentBlock.m_Y < MaxY)
-                  NextBlock = true;
+                else if (CurrentBlock.GetXChange() == 0)  // I shape but horizontal
+                    --MinY;
+                if (CurrentBlock.m_Y >= MinY)
+                  NextBlock = true; // No game over => send next block
                 else
                 {
                   // Game over
@@ -602,7 +602,7 @@ void tetrisLoop()
           // Start new block
           uint8_t j = random8(sizeof(TetrisSprData) / sizeof(TetrisSprData[0]));
           CurrentBlock.Setup(TETRIS_SPR_WIDTH, TETRIS_SPR_WIDTH, TetrisSprData[j], 4, _3BIT, TetrisColours, TetrisSprMask[j]);
-          CurrentBlock.SetPositionFrameMotionOptions((SCREEN_WIDTH/2)-1, SCREEN_HEIGHT, 0, 0, 0, 0, -1, DropDelay, SPRITE_DETECT_COLLISION | SPRITE_DETECT_EDGE);
+          CurrentBlock.SetPositionFrameMotionOptions((SCREEN_WIDTH/2)-1, 0, 0, 0, 0, 0, +1, DropDelay, SPRITE_DETECT_COLLISION | SPRITE_DETECT_EDGE);
           CurrentBlock.SetXChange(j);
           Sprites->AddSprite(&CurrentBlock);
           NextBlock = false;
