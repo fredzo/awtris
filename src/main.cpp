@@ -88,6 +88,7 @@ void loop() {
   }
 
     tetrisLoop(command);
+    //delete command;
 
   // Set the last-read button state to the old state.
   oldButtonState = newButtonState;

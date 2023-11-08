@@ -7,6 +7,7 @@
 
 #define TARGET_FRAME_TIME    15  // Desired update rate, though if too many leds it will just run as fast as it can!
 #define INITIAL_DROP_FRAMES  20  // Start of game block drop delay in frames
+#define COMMAND_REPEAT_DELAY  100
 
 FastLED_NeoMatrix *matrix;
 
@@ -356,7 +357,7 @@ int16_t TotalLines;
 unsigned int HighScore = 0, LastScore;
 
 uint16_t PlasmaTime, PlasmaShift;
-unsigned long LoopDelayMS, LastLoop;
+unsigned long LoopDelayMS, LastLoop, lastRotateCommand, lastLeftCommand, lastRightCommand;
 
 void tetrisInit(FastLED_NeoMatrix * ledMatrix)
 {
@@ -470,33 +471,45 @@ void tetrisLoop(GamePad::Command command)
           // Check for user input
           if ( command.a || command.b)
           {
-            if ((CurrentBlock.GetCurrentFrame() % 2) == 1)  // Frame 1 or 3
+            if(millis()-lastRotateCommand >= COMMAND_REPEAT_DELAY)
             {
-              if (CurrentBlock.GetXChange() == 0) // I shape, vertical
-                CurrentBlock.m_X = _min(CurrentBlock.m_X, SCREEN_WIDTH - TETRIS_SPR_WIDTH);
-              else if ((CurrentBlock.GetXChange() != 3) && (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MAX)) // Not O shape and near border => give some space
-                --CurrentBlock.m_X;
+              lastRotateCommand = millis();
+              if ((CurrentBlock.GetCurrentFrame() % 2) == 1)  // Frame 1 or 3
+              {
+                if (CurrentBlock.GetXChange() == 0) // I shape, vertical
+                  CurrentBlock.m_X = _min(CurrentBlock.m_X, SCREEN_WIDTH - TETRIS_SPR_WIDTH);
+                else if ((CurrentBlock.GetXChange() != 3) && (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MAX)) // Not O shape and near border => give some space
+                  --CurrentBlock.m_X;
+              }
+              CurrentBlock.IncreaseFrame(); // Rotate to next frame
+              Sprites->DetectCollisions(&CurrentBlock);
+              if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
+                CurrentBlock.DecreaseFrame();
             }
-            CurrentBlock.IncreaseFrame(); // Rotate to next frame
-            Sprites->DetectCollisions(&CurrentBlock);
-            if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
-              CurrentBlock.DecreaseFrame();
           }
           
           if ( command.left && (! (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MIN)) ) // Go left and check if not already on the border
           {
-            CurrentBlock.m_X--;
-            Sprites->DetectCollisions(&CurrentBlock);
-            if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
-              CurrentBlock.m_X++;
+            if(millis()-lastLeftCommand >= COMMAND_REPEAT_DELAY)
+            {
+              lastLeftCommand = millis();
+              CurrentBlock.m_X--;
+              Sprites->DetectCollisions(&CurrentBlock);
+              if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
+                CurrentBlock.m_X++;
+            }
           }
           
           else if ( command.right && (! (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MAX)) ) // Go right and check if not already on the border
           {
-            CurrentBlock.m_X++;
-            Sprites->DetectCollisions(&CurrentBlock);
-            if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
-              CurrentBlock.m_X--;
+            if(millis()-lastRightCommand >= COMMAND_REPEAT_DELAY)
+            {
+              lastRightCommand = millis();
+              CurrentBlock.m_X++;
+              Sprites->DetectCollisions(&CurrentBlock);
+              if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
+                CurrentBlock.m_X--;
+            }
           }
           
           if ( command.down ) // Go down
@@ -517,12 +530,12 @@ void tetrisLoop(GamePad::Command command)
               if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
               {
                 // Block has collided check for game over
-                int16_t MinY = 2;
+                int16_t MinY = 1;
                 if ((CurrentBlock.GetCurrentFrame() % 2) == 1)
                 {
-                  if (CurrentBlock.GetXChange() == 0) // I shape
+                  if (CurrentBlock.GetXChange() == 0) // I shape vertical
                     MinY += 2;
-                  else if (CurrentBlock.GetXChange() != 3) // Not O shape
+                  else if (CurrentBlock.GetXChange() != 3) // Not O shape + vertical
                     MinY += 1;
                 }
                 else if (CurrentBlock.GetXChange() == 0)  // I shape but horizontal
