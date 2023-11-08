@@ -4,6 +4,7 @@
 #include <Adafruit_GFX.h>
 #include <FastLED.h>
 #include <FastLED_NeoMatrix.h>
+#include <Tetris.h>
 
 
 /// Wiimote
@@ -14,61 +15,13 @@ static long last_ms = 0;
 static int num_run = 0, num_updates = 0;
 
 /// Neo Matrix
-
-// MATRIX DECLARATION:
-// Parameter 1 = width of EACH NEOPIXEL MATRIX (not total display)
-// Parameter 2 = height of each matrix
-// Parameter 3 = number of matrices arranged horizontally
-// Parameter 4 = number of matrices arranged vertically
-// Parameter 5 = pin number (most are valid)
-// Parameter 6 = matrix layout flags, add together as needed:
-//   NEO_MATRIX_TOP, NEO_MATRIX_BOTTOM, NEO_MATRIX_LEFT, NEO_MATRIX_RIGHT:
-//     Position of the FIRST LED in the FIRST MATRIX; pick two, e.g.
-//     NEO_MATRIX_TOP + NEO_MATRIX_LEFT for the top-left corner.
-//   NEO_MATRIX_ROWS, NEO_MATRIX_COLUMNS: LEDs WITHIN EACH MATRIX are
-//     arranged in horizontal rows or in vertical columns, respectively;
-//     pick one or the other.
-//   NEO_MATRIX_PROGRESSIVE, NEO_MATRIX_ZIGZAG: all rows/columns WITHIN
-//     EACH MATRIX proceed in the same order, or alternate lines reverse
-//     direction; pick one.
-//   NEO_TILE_TOP, NEO_TILE_BOTTOM, NEO_TILE_LEFT, NEO_TILE_RIGHT:
-//     Position of the FIRST MATRIX (tile) in the OVERALL DISPLAY; pick
-//     two, e.g. NEO_TILE_TOP + NEO_TILE_LEFT for the top-left corner.
-//   NEO_TILE_ROWS, NEO_TILE_COLUMNS: the matrices in the OVERALL DISPLAY
-//     are arranged in horizontal rows or in vertical columns, respectively;
-//     pick one or the other.
-//   NEO_TILE_PROGRESSIVE, NEO_TILE_ZIGZAG: the ROWS/COLUMS OF MATRICES
-//     (tiles) in the OVERALL DISPLAY proceed in the same order for every
-//     line, or alternate lines reverse direction; pick one.  When using
-//     zig-zag order, the orientation of the matrices in alternate rows
-//     will be rotated 180 degrees (this is normal -- simplifies wiring).
-//   See example below for these values in action.
-// Parameter 7 = pixel type flags, add together as needed:
-//   NEO_RGB     Pixels are wired for RGB bitstream (v1 pixels)
-//   NEO_GRB     Pixels are wired for GRB bitstream (v2 pixels)
-//   NEO_KHZ400  400 KHz bitstream (e.g. FLORA v1 pixels)
-//   NEO_KHZ800  800 KHz bitstream (e.g. High Density LED strip)
-
-// Example with three 10x8 matrices (created using NeoPixel flex strip --
-// these grids are not a ready-made product).  In this application we'd
-// like to arrange the three matrices side-by-side in a wide display.
-// The first matrix (tile) will be at the left, and the first pixel within
-// that matrix is at the top left.  The matrices use zig-zag line ordering.
-// There's only one row here, so it doesn't matter if we declare it in row
-// or column order.  The matrices use 800 KHz (v2) pixels that expect GRB
-// color data.
 #define NUMMATRIX (MATRIX_WIDTH*MATRIX_HEIGHT)
 
 CRGB matrixleds[NUMMATRIX];
+// Create a NeoMatrix of 32x8 pixels corresponding to Ulanzi Desktop Clock screen (in horizontal position)
+FastLED_NeoMatrix *neoMatrix = new FastLED_NeoMatrix(matrixleds, MATRIX_WIDTH, MATRIX_HEIGHT, NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG);    
 
-FastLED_NeoMatrix *matrix = /*new FastLED_NeoMatrix(matrixleds, 8, MATRIX_WIDTH, MATRIX_HEIGHT/8, 1, 
-  NEO_MATRIX_TOP     + NEO_MATRIX_RIGHT +
-    NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG + 
-    NEO_TILE_TOP + NEO_TILE_LEFT +  NEO_TILE_PROGRESSIVE);*/
-new FastLED_NeoMatrix(matrixleds, 32, 8, NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG);    
-
-const uint16_t colors[] = {
-  matrix->Color(255, 0, 0), matrix->Color(0, 255, 0), matrix->Color(0, 0, 255) };
+const uint16_t colors[] = { neoMatrix->Color(255, 0, 0), neoMatrix->Color(0, 255, 0), neoMatrix->Color(0, 0, 255) };
 
 
 //////////// Initialisation du programme //////////////
@@ -78,22 +31,29 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Démarrage Awtrix !");
 #endif
+  // Buzzer
   pinMode(BUZZER_PIN, OUTPUT);
+  // Turn buzzer off
   digitalWrite(BUZZER_PIN,0);
+  // Buttons
   pinMode(CENTER_BUTTON_PIN, INPUT_PULLUP);
+  // Wimote driver init
   wiimote.init();
   if (! logging)
       wiimote.addFilter(ACTION_IGNORE, FILTER_ACCEL); // optional
   
   last_ms = millis();
 
+  // Set leds for matrix to NEOPIXEL type with corresponding pin
   FastLED.addLeds<NEOPIXEL, MATRIX_PIN>(matrixleds, MATRIX_WIDTH * MATRIX_HEIGHT);
-  matrix->begin();
-  matrix->setTextWrap(false);
-  matrix->setBrightness(40);
-  matrix->setTextColor(colors[0]);
+  neoMatrix->begin();
+  // Rotate screen in vertical position for Tetris-style display
+  neoMatrix->setRotation(1);
+  neoMatrix->setTextWrap(false);
+  neoMatrix->setBrightness(40);
+  neoMatrix->setTextColor(colors[0]);
 
-
+  tetrisInit(neoMatrix);
 }
 
 //////////// Boucle principale //////////////
@@ -111,6 +71,7 @@ void loop() {
 
 
     wiimote.task();
+    tetrisLoop();
     num_run++;
 
   // Get current button state.
@@ -123,6 +84,7 @@ void loop() {
     // Check if button is still low after debounce.
     newButtonState = digitalRead(CENTER_BUTTON_PIN);
     if(newButtonState == LOW) {      // Yes, still low
+      currentInput = ROTATE;
         //Serial.println("Change special effect !");
         //effectManager->changeSpecialEffect(true);
     }
@@ -186,31 +148,31 @@ void loop() {
         }
     }
 
-  matrix->fillScreen(0);
-/*  matrix->drawPixel(x,y,colors[pass]);
+/*  neoMatrix->fillScreen(0);
+  neoMatrix->drawPixel(x,y,colors[pass]);
   x++;
-  if(x>=MATRIX_WIDTH)
+  if(x>=SCREEN_WIDTH)
   {
     x = 0;
     y++;
-    if(y>=MATRIX_HEIGHT)
+    if(y>=SCREEN_HEIGHT)
     {
       y=0;
       if(++pass >= 3) pass = 0;
     }
-  } */
-
-  matrix->setCursor(x, 0);
-  matrix->print(F("Howdy"));
-  if(--x < -36) {
-    x = matrix->width();
-    if(++pass >= 3) pass = 0;
-    matrix->setTextColor(colors[pass]);
   }
+*/
+/*  neoMatrix->setCursor(x, 0);
+  neoMatrix->print(F("Howdy"));
+  if(--x < -36) {
+    x = neoMatrix->width();
+    if(++pass >= 3) pass = 0;
+    neoMatrix->setTextColor(colors[pass]);
+  }
+*/
 
-
-  matrix->show();
-  delay(100);
+  //neoMatrix->show();
+  //delay(100);
 
 
 

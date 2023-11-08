@@ -12,6 +12,9 @@
 // Matrix size
 #define MATRIX_WIDTH      32
 #define MATRIX_HEIGHT     8
+// Screen size (after rotation)
+#define SCREEN_WIDTH      MATRIX_HEIGHT
+#define SCREEN_HEIGHT     MATRIX_WIDTH
 
 // Uncomment to enable logs on serial out
 #define SERIAL_OUT
