@@ -3,12 +3,9 @@
 
 #include <AwtrisConf.h>
 #include <FastLED_NeoMatrix.h>
-
-// Bluetooth input
-enum btnInput {NONE, ROTATE, DOWN, LEFT, RIGHT};
-extern btnInput currentInput;
+#include <GamePad.h>
 
 void tetrisInit(FastLED_NeoMatrix * ledMatrix);
-void tetrisLoop();
+void tetrisLoop(GamePad::Command command);
 
 #endif 

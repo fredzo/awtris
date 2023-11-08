@@ -358,8 +358,6 @@ unsigned int HighScore = 0, LastScore;
 uint16_t PlasmaTime, PlasmaShift;
 unsigned long LoopDelayMS, LastLoop;
 
-btnInput currentInput = NONE;
-
 void tetrisInit(FastLED_NeoMatrix * ledMatrix)
 {
   matrix = ledMatrix;
@@ -391,7 +389,7 @@ void tetrisInit(FastLED_NeoMatrix * ledMatrix)
   PlasmaTime = 0;
 }
 
-void tetrisLoop()
+void tetrisLoop(GamePad::Command command)
 {
   if ((millis() - LastLoop) >= LoopDelayMS)
   {
@@ -417,7 +415,7 @@ void tetrisLoop()
 
     if (AttractMode)
     {
-      if (currentInput != NONE)
+      if (command.hasCommand())
       {
         AttractMode = false;
         memset(PlayfieldData, 0, sizeof(PlayfieldData));
@@ -428,7 +426,7 @@ void tetrisLoop()
         DropDelay = INITIAL_DROP_FRAMES;
         CurrentBlock.SetXChange(-1);
         NextBlock = true;
-        currentInput = NONE;
+        command = GamePad::NO_COMMAND;
       }
     }
     else
@@ -470,9 +468,8 @@ void tetrisLoop()
         if (CurrentBlock.GetXChange() >= 0) // We have a current block
         {
           // Check for user input
-          if ( currentInput == ROTATE )
+          if ( command.a || command.b)
           {
-            currentInput = NONE;
             if ((CurrentBlock.GetCurrentFrame() % 2) == 1)  // Frame 1 or 3
             {
               if (CurrentBlock.GetXChange() == 0) // I shape, vertical
@@ -486,27 +483,24 @@ void tetrisLoop()
               CurrentBlock.DecreaseFrame();
           }
           
-          if ( currentInput == LEFT && (! (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MIN)) ) // Go left and check if not already on the border
+          if ( command.left && (! (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MIN)) ) // Go left and check if not already on the border
           {
-            currentInput = NONE;
             CurrentBlock.m_X--;
             Sprites->DetectCollisions(&CurrentBlock);
             if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
               CurrentBlock.m_X++;
           }
           
-          else if ( currentInput == RIGHT && (! (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MAX)) ) // Go right and check if not already on the border
+          else if ( command.right && (! (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MAX)) ) // Go right and check if not already on the border
           {
-            currentInput = NONE;
             CurrentBlock.m_X++;
             Sprites->DetectCollisions(&CurrentBlock);
             if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
               CurrentBlock.m_X--;
           }
           
-          if ( currentInput == DOWN ) // Go down
+          if ( command.down ) // Go down
           {
-            currentInput = NONE;
             CurrentBlock.SetYCounter(1); // Force y increment on next cycle
           }
             
