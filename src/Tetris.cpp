@@ -4,6 +4,7 @@
 #include <LEDSprites.h>
 #include <FastLED.h>
 #include <FastLED_NeoMatrix.h>
+#include <RandomGenerator.h>
 
 #define TARGET_FRAME_TIME    15  // Desired update rate, though if too many leds it will just run as fast as it can!
 #define INITIAL_DROP_FRAMES  20  // Start of game block drop delay in frames
@@ -425,7 +426,7 @@ void tetrisLoop(GamePad::Command command)
       }
       else
       { // Background change
-        if(millis()-lastPlusMinusCommand >= COMMAND_REPEAT_DELAY)
+        if(millis()-lastPlusMinusCommand >= (COMMAND_REPEAT_DELAY*2))
         {
           lastPlusMinusCommand = millis();
           if(command.plus)
@@ -675,7 +676,8 @@ void tetrisLoop(GamePad::Command command)
             DropDelay = _max(1, INITIAL_DROP_FRAMES - (TotalLines / 5));
           }
           // Start new block
-          uint8_t j = random8(sizeof(TetrisSprData) / sizeof(TetrisSprData[0]));
+          deal();
+          Tetrominoe j = getCurrentTetrominoe();
           CurrentBlock.Setup(TETRIS_SPR_WIDTH, TETRIS_SPR_WIDTH, TetrisSprData[j], 4, _3BIT, TetrisColours, TetrisSprMask[j]);
           CurrentBlock.SetPositionFrameMotionOptions((SCREEN_WIDTH/2)-1, 0, 0, 0, 0, 0, +1, DropDelay, SPRITE_DETECT_COLLISION | SPRITE_DETECT_EDGE);
           CurrentBlock.SetXChange(j);
@@ -686,6 +688,8 @@ void tetrisLoop(GamePad::Command command)
       }
     }
     Sprites->RenderSprites();
+    // Show a hint for next Tetrominoe
+    matrix->drawPixel(7,0,TetrisColours[getNextTetrominoe()]);
     if (AttractMode)
     {
       /*if (TetrisMsg.UpdateText() == -1)
