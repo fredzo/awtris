@@ -27,7 +27,7 @@ class GamePad
     private :
         /// Wiimote
         ESP32Wiimote wiimote;
-        bool logging = true;
+        bool logging = false;
         long last_ms = 0;
         int num_run = 0, num_updates = 0;
         Command  currentCommand = NO_COMMAND;

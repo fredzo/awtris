@@ -7,7 +7,7 @@
 
 #define TARGET_FRAME_TIME    15  // Desired update rate, though if too many leds it will just run as fast as it can!
 #define INITIAL_DROP_FRAMES  20  // Start of game block drop delay in frames
-#define COMMAND_REPEAT_DELAY  100
+#define COMMAND_REPEAT_DELAY  150
 
 FastLED_NeoMatrix *matrix;
 
@@ -445,7 +445,7 @@ void tetrisLoop(GamePad::Command command)
           uint16_t Mbpl = (SCREEN_WIDTH + 7) / 8;
           uint16_t Dbpl = Mbpl * _3BIT;
           int16_t k;
-          for (int16_t i=(SCREEN_HEIGHT-1)*Dbpl,j=(SCREEN_HEIGHT-1)*Mbpl; i>=0; i-=Dbpl,j-=Mbpl)
+          for (int16_t i=0,j=0; i<(SCREEN_HEIGHT-1)*Dbpl; i+=Dbpl,j+=Mbpl)
           {
             for (k=0; k<SCREEN_WIDTH; k+=8)
             {
@@ -454,12 +454,16 @@ void tetrisLoop(GamePad::Command command)
             }
             if (k >= SCREEN_WIDTH)
             {
-              memmove(&Data[Dbpl], &Data[0], i);
-              memset(&Data[0], 0, Dbpl);
-              memmove(&Mask[Mbpl], &Mask[0], j);
-              memset(&Mask[0], 0, Mbpl);
-              i+=Dbpl;
-              j+=Mbpl;
+              //memmove(&Data[Dbpl], &Data[0], i);
+              //memset(&Data[0], 0, Dbpl);
+              //memmove(&Mask[Mbpl], &Mask[0], j);
+              //memset(&Mask[0], 0, Mbpl);
+              memmove(&Data[i], &Data[i+1], (SCREEN_HEIGHT-1)*Dbpl-i);
+              memset(&Data[(SCREEN_HEIGHT-1)*Dbpl], 0, Dbpl);
+              memmove(&Mask[j], &Mask[j+1], (SCREEN_HEIGHT-1)*Mbpl-j);
+              memset(&Mask[(SCREEN_HEIGHT-1)*Mbpl], 0, Mbpl);
+              i-=Dbpl;
+              j-=Mbpl;
             }
           }
         }

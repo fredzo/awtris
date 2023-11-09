@@ -97,7 +97,7 @@ GamePad::Command GamePad::getCommand()
             currentCommand = NO_COMMAND;
         }
     }
-
+/*
     if (! logging)
     {
         long ms = millis();
@@ -107,6 +107,6 @@ GamePad::Command GamePad::getCommand()
             num_run = num_updates = 0;
             last_ms += 1000;
         }
-    }
+    }*/
     return currentCommand;
 }
