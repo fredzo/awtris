@@ -458,9 +458,9 @@ void tetrisLoop(GamePad::Command command)
               //memset(&Data[0], 0, Dbpl);
               //memmove(&Mask[Mbpl], &Mask[0], j);
               //memset(&Mask[0], 0, Mbpl);
-              memmove(&Data[i], &Data[i+1], (SCREEN_HEIGHT-1)*Dbpl-i);
+              memmove(&Data[i], &Data[i+Dbpl], ((SCREEN_HEIGHT-1)*Dbpl)-i);
               memset(&Data[(SCREEN_HEIGHT-1)*Dbpl], 0, Dbpl);
-              memmove(&Mask[j], &Mask[j+1], (SCREEN_HEIGHT-1)*Mbpl-j);
+              memmove(&Mask[j], &Mask[j+Mbpl], ((SCREEN_HEIGHT-1)*Mbpl)-j);
               memset(&Mask[(SCREEN_HEIGHT-1)*Mbpl], 0, Mbpl);
               i-=Dbpl;
               j-=Mbpl;
