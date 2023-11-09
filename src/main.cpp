@@ -43,7 +43,7 @@ void setup() {
   // Rotate screen in vertical position for Tetris-style display
   neoMatrix->setRotation(1);
   neoMatrix->setTextWrap(false);
-  neoMatrix->setBrightness(40);
+  neoMatrix->setBrightness(DEFAULT_BRIGHTNESS);
   neoMatrix->setTextColor(colors[0]);
 
   tetrisInit(neoMatrix);

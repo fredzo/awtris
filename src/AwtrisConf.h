@@ -16,6 +16,9 @@
 #define SCREEN_WIDTH      MATRIX_HEIGHT
 #define SCREEN_HEIGHT     MATRIX_WIDTH
 
+// Default birghtness for LedMatrix
+#define DEFAULT_BRIGHTNESS  40
+
 // Uncomment to enable logs on serial out
 #define SERIAL_OUT
 

@@ -5,7 +5,7 @@ GamePad::Command GamePad::NO_COMMAND = GamePad::Command();
 
 bool GamePad::Command::hasCommand()
 {
-    return (a || b || up || down || left || right);
+    return (a || b || up || down || left || right || plus || minus || menu);
 }
 
 void GamePad::init()
@@ -46,13 +46,16 @@ GamePad::Command GamePad::getCommand()
         if(a || b || c || z || b1 || b2 || minus || plus || home || left || right || up || down)
         {
             currentCommand = Command();
-            currentCommand.a = a || b1 || c || minus || home;
-            currentCommand.b = a || b2 || z || plus;
+            currentCommand.a = b1 || c || home;
+            currentCommand.b = b2 || z;
             // Change for horizontal orientation
             currentCommand.left = up;
             currentCommand.right = down;
             currentCommand.up = right;
             currentCommand.down = left;
+            currentCommand.plus = plus;
+            currentCommand.minus = minus;
+            currentCommand.menu = a;
             num_updates++;
             if (logging)
             {

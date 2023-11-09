@@ -357,7 +357,12 @@ int16_t TotalLines;
 unsigned int HighScore = 0, LastScore;
 
 uint16_t PlasmaTime, PlasmaShift;
-unsigned long LoopDelayMS, LastLoop, lastRotateCommand, lastLeftCommand, lastRightCommand;
+unsigned long LoopDelayMS, LastLoop, lastRotateCommand, lastLeftCommand, lastRightCommand, lastPlusMinusCommand;
+
+enum BackgroundEffect { NONE = 0, PLASMA = 1 };
+BackgroundEffect currentBackgroundEffect = NONE;
+
+uint8_t brightness = DEFAULT_BRIGHTNESS;
 
 void tetrisInit(FastLED_NeoMatrix * ledMatrix)
 {
@@ -397,22 +402,71 @@ void tetrisLoop(GamePad::Command command)
     LastLoop = millis();
     matrix->clear();
 
-    // Fill background with dim plasma
-    #define PLASMA_X_FACTOR  24
-    #define PLASMA_Y_FACTOR  24
-    for (int16_t x=0; x<SCREEN_WIDTH; x++)
+    
+    if ( (command.plus || command.minus))
     {
-      for (int16_t y=0; y<SCREEN_HEIGHT; y++)
-      {
-        int16_t r = sin16(PlasmaTime) / 256;
-        int16_t h = sin16(x * r * PLASMA_X_FACTOR + PlasmaTime) + cos16(y * (-r) * PLASMA_Y_FACTOR + PlasmaTime) + sin16(y * x * (cos16(-PlasmaTime) / 256) / 2);
-        matrix->drawPixel(x, y,CHSV((uint8_t)((h / 256) + 128), 255, 64));
+      if(command.menu)
+      { // Brightness change
+        if(command.plus)
+        {
+          if(brightness < 0xFF)
+          {
+            brightness++;
+          }
+        }
+        else
+        {
+          if(brightness > 0)
+          {
+            brightness--;
+          }
+        }
+        matrix->setBrightness(brightness);
+      }
+      else
+      { // Background change
+        if(millis()-lastPlusMinusCommand >= COMMAND_REPEAT_DELAY)
+        {
+          lastPlusMinusCommand = millis();
+          if(command.plus)
+          {
+            currentBackgroundEffect = (BackgroundEffect)(currentBackgroundEffect + 1);
+            if(currentBackgroundEffect > PLASMA)
+            {
+              currentBackgroundEffect = NONE;
+            }
+          }
+          else
+          {
+            currentBackgroundEffect = (BackgroundEffect)(currentBackgroundEffect - 1);
+            if(currentBackgroundEffect < NONE)
+            {
+              currentBackgroundEffect = PLASMA;
+            }
+          }
+        }
       }
     }
-    uint16_t OldPlasmaTime = PlasmaTime;
-    PlasmaTime += PlasmaShift;
-    if (OldPlasmaTime > PlasmaTime)
-      PlasmaShift = (random8(0, 5) * 32) + 64;
+
+    if(currentBackgroundEffect == PLASMA)
+    {
+      // Fill background with dim plasma
+      #define PLASMA_X_FACTOR  24
+      #define PLASMA_Y_FACTOR  24
+      for (int16_t x=0; x<SCREEN_WIDTH; x++)
+      {
+        for (int16_t y=0; y<SCREEN_HEIGHT; y++)
+        {
+          int16_t r = sin16(PlasmaTime) / 256;
+          int16_t h = sin16(x * r * PLASMA_X_FACTOR + PlasmaTime) + cos16(y * (-r) * PLASMA_Y_FACTOR + PlasmaTime) + sin16(y * x * (cos16(-PlasmaTime) / 256) / 2);
+          matrix->drawPixel(x, y,CHSV((uint8_t)((h / 256) + 128), 255, 64));
+        }
+      }
+      uint16_t OldPlasmaTime = PlasmaTime;
+      PlasmaTime += PlasmaShift;
+      if (OldPlasmaTime > PlasmaTime)
+        PlasmaShift = (random8(0, 5) * 32) + 64;
+    }
 
     if (AttractMode)
     {
@@ -485,10 +539,20 @@ void tetrisLoop(GamePad::Command command)
                 else if ((CurrentBlock.GetXChange() != 3) && (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MAX)) // Not O shape and near border => give some space
                   --CurrentBlock.m_X;
               }
-              CurrentBlock.IncreaseFrame(); // Rotate to next frame
-              Sprites->DetectCollisions(&CurrentBlock);
-              if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
-                CurrentBlock.DecreaseFrame();
+              if(command.a)
+              {
+                CurrentBlock.DecreaseFrame(); // Rotate to previous frame
+                Sprites->DetectCollisions(&CurrentBlock);
+                if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
+                  CurrentBlock.IncreaseFrame();
+              }
+              else
+              {
+                CurrentBlock.IncreaseFrame(); // Rotate to next frame
+                Sprites->DetectCollisions(&CurrentBlock);
+                if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
+                  CurrentBlock.DecreaseFrame();
+              }
             }
           }
           
