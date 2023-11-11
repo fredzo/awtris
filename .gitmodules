@@ -1,0 +1,4 @@
+[submodule "lib/melody-player"]
+	path = lib/melody-player
+	url = https://github.com/fredzo/melody-player
+	branch = main
