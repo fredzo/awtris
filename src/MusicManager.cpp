@@ -20,7 +20,7 @@ void MusicManager::setVolume(byte volume)
 
 void MusicManager::startMelody()
 {
-  player->playAsync(mainMelody);
+  player->playAsync(mainMelody,true);
 }
 
 void MusicManager::stopMelody()
