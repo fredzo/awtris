@@ -340,7 +340,7 @@ const uint8_t TetrisZMask[] =
 #define TETRIS_SPR_HEIGHT 4
 const uint8_t *TetrisSprData[] = { TetrisIData, TetrisJData, TetrisLData, TetrisOData, TetrisSData, TetrisTData, TetrisZData };
 const uint8_t *TetrisSprMask[] = { TetrisIMask, TetrisJMask, TetrisLMask, TetrisOMask, TetrisSMask, TetrisTMask, TetrisZMask};
-const struct CRGB TetrisColours[] = { CRGB(0, 255, 255), CRGB(0, 0, 255), CRGB(255, 165, 0), CRGB(255, 255, 0), CRGB(50, 205, 50), CRGB(255, 0, 255), CRGB(255, 0, 0) };
+const struct CRGB TetrisColours[] = { CRGB(0, 255, 255), CRGB(0, 0, 255), CRGB(255, 100, 0), CRGB(255, 255, 0), CRGB(20, 255, 20), CRGB(255, 0, 255), CRGB(255, 0, 0) };
 
 uint8_t PlayfieldData[SCREEN_HEIGHT * ((SCREEN_WIDTH + 7) / 8) * _3BIT];
 uint8_t PlayfieldMask[SCREEN_HEIGHT * ((SCREEN_WIDTH + 7) / 8) * _1BIT];
