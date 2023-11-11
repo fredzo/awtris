@@ -11,6 +11,7 @@
 #define COMMAND_REPEAT_DELAY  150
 
 FastLED_NeoMatrix *matrix;
+MusicManager* tetrisMusicManager;
 
 const uint8_t TetrisIData[] = 
 {
@@ -365,9 +366,10 @@ BackgroundEffect currentBackgroundEffect = NONE;
 
 uint8_t brightness = DEFAULT_BRIGHTNESS;
 
-void tetrisInit(FastLED_NeoMatrix * ledMatrix)
+void tetrisInit(FastLED_NeoMatrix * ledMatrix, MusicManager * musicManager)
 {
   matrix = ledMatrix;
+  tetrisMusicManager = musicManager;
   Sprites = new cLEDSprites(matrix);
   memset(PlayfieldData, 0, sizeof(PlayfieldData));
   memset(PlayfieldMask, 0, sizeof(PlayfieldMask));
@@ -483,6 +485,7 @@ void tetrisLoop(GamePad::Command command)
         CurrentBlock.SetXChange(-1);
         NextBlock = true;
         command = GamePad::NO_COMMAND;
+        tetrisMusicManager->startMelody();
       }
     }
     else
@@ -616,6 +619,7 @@ void tetrisLoop(GamePad::Command command)
                   // Game over
                   CurrentBlock.SetYCounter(2);  // Stop last block moving down!
                   AttractMode = true;
+                  tetrisMusicManager->playGameOverSound();
                   if (LastScore > HighScore)
                   {
                     HighScore = LastScore;

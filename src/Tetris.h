@@ -4,8 +4,9 @@
 #include <AwtrisConf.h>
 #include <FastLED_NeoMatrix.h>
 #include <GamePad.h>
+#include <MusicManager.h>
 
-void tetrisInit(FastLED_NeoMatrix * ledMatrix);
+void tetrisInit(FastLED_NeoMatrix * ledMatrix, MusicManager * musicManager);
 void tetrisLoop(GamePad::Command command);
 
 #endif 
