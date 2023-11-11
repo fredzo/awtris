@@ -10,8 +10,12 @@ void MusicManager::init()
 {
   mainMelody = MelodyFactory.loadRtttlString(mainMelodyString);
   gameOverMelody = MelodyFactory.loadRtttlString(gameOverMelodyString);
-  //player.playAsync(melody);
+  player->setVolume(DEFAULT_VOLUME);
+}
 
+void MusicManager::setVolume(byte volume)
+{
+  player->setVolume(volume);
 }
 
 void MusicManager::startMelody()

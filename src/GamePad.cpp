@@ -5,7 +5,7 @@ GamePad::Command GamePad::NO_COMMAND = GamePad::Command();
 
 bool GamePad::Command::hasCommand()
 {
-    return (a || b || up || down || left || right || plus || minus || menu);
+    return (a || b || up || down || left || right || plus || minus || menu || trig);
 }
 
 void GamePad::init()
@@ -56,6 +56,7 @@ GamePad::Command GamePad::getCommand()
             currentCommand.plus = plus;
             currentCommand.minus = minus;
             currentCommand.menu = a;
+            currentCommand.trig = b;
             num_updates++;
             if (logging)
             {

@@ -22,6 +22,8 @@ class MusicManager
 
         void init();
 
+        void setVolume(byte volume);
+
         void startMelody();
 
         void stopMelody();

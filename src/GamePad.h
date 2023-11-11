@@ -19,6 +19,7 @@ class GamePad
                 bool plus = false;  
                 bool minus = false;
                 bool menu = false;  // Maped to wiimote "A" button
+                bool trig = false;  // Maped to wiimote trigger button
                 bool hasCommand();
         };
         static Command NO_COMMAND;

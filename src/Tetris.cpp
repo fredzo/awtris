@@ -365,6 +365,7 @@ enum BackgroundEffect { NONE = 0, PLASMA = 1 };
 BackgroundEffect currentBackgroundEffect = NONE;
 
 uint8_t brightness = DEFAULT_BRIGHTNESS;
+uint8_t volume = DEFAULT_VOLUME;
 
 void tetrisInit(FastLED_NeoMatrix * ledMatrix, MusicManager * musicManager)
 {
@@ -425,6 +426,24 @@ void tetrisLoop(GamePad::Command command)
           }
         }
         matrix->setBrightness(brightness);
+      }
+      else if(command.trig)
+      { // Volume change
+        if(command.plus)
+        {
+          if(volume < 0xFF)
+          {
+            volume++;
+          }
+        }
+        else
+        {
+          if(volume > 0)
+          {
+            volume--;
+          }
+        }
+        tetrisMusicManager->setVolume(volume);
       }
       else
       { // Background change
