@@ -34,23 +34,30 @@ class MusicManager
 
         void handleMusic();
 
+        void unmute();
+
 
     private :
 
         MelodyPlayer* player;
+        MelodyPlayer* effectPlayer;
 
         Melody mainMelody;
 
         Melody gameOverMelody;
 
+        Melody lineEffect;
+
         MusicManager()
         {
             player = new MelodyPlayer(BUZZER_PIN,0,LOW);
+            effectPlayer = new MelodyPlayer(BUZZER_PIN,0,LOW);
         };
 
         ~MusicManager()
         {
             delete player;
+            delete effectPlayer;
         };
 
         static MusicManager *musicManagerInstance;

@@ -543,6 +543,8 @@ void tetrisLoop(GamePad::Command command)
               j-=Mbpl;
             }
           }
+          // Sound effect
+          tetrisMusicManager->playLineSound();
         }
       }
       else
