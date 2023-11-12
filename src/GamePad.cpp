@@ -11,22 +11,26 @@ bool GamePad::Command::hasCommand()
 void GamePad::init()
 {
   last_ms = millis();
-
+#ifdef BLUETOOTH
   wiimote.init();
   if (! logging)
   {
     wiimote.addFilter(ACTION_IGNORE, FILTER_ACCEL); // optional
   }
+#endif
 }
 
 void GamePad::processTasks()
 {
+#ifdef BLUETOOTH
    wiimote.task();
+#endif
    num_run++;
 }
 
 GamePad::Command GamePad::getCommand()
 {
+#ifdef BLUETOOTH
     if (wiimote.available() > 0) 
     {
         ButtonState  button  = wiimote.getButtonState();
@@ -112,5 +116,7 @@ GamePad::Command GamePad::getCommand()
             last_ms += 1000;
         }
     }*/
+#endif
+
     return currentCommand;
 }

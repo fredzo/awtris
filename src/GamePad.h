@@ -2,8 +2,9 @@
 #define GAMEPAD_H
 #include <Arduino.h>
 #include <AwtrisConf.h>
+#ifdef BLUETOOTH
 #include <ESP32Wiimote.h>
-
+#endif
 class GamePad
 {
     public :
@@ -30,7 +31,9 @@ class GamePad
 
     private :
         /// Wiimote
+#ifdef BLUETOOTH
         ESP32Wiimote wiimote;
+#endif
         bool logging = false;
         long last_ms = 0;
         int num_run = 0, num_updates = 0;

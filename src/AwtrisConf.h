@@ -25,4 +25,10 @@
 // Uncomment to enable logs on serial out
 #define SERIAL_OUT
 
+// Uncomment to activate wifi
+#define WIFI
+
+// Uncomment to activate bluetooth
+#define BLUETOOTH
+
 #endif

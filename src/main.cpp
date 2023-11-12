@@ -6,12 +6,18 @@
 #include <FastLED_NeoMatrix.h>
 #include <Tetris.h>
 #include <MusicManager.h>
+#include <WifiManager.h>
+#include <MultiPlayer.h>
+
 
 /// GamePad instance
 GamePad* gamePad;
 
 /// Music Manager instance
 MusicManager* musicManager;
+
+/// MultiPlayer instance
+MultiPlayer* multiPlayer;
 
 /// Neo Matrix
 #define NUMMATRIX (MATRIX_WIDTH*MATRIX_HEIGHT)
@@ -29,6 +35,16 @@ void setup() {
 #ifdef SERIAL_OUT
   Serial.begin(115200);
   Serial.println("Démarrage Awtrix !");
+  Serial.print("Chip Model : ");
+  Serial.println(ESP.getChipModel());
+  Serial.print("Chip Revision : ");
+  Serial.println(ESP.getChipRevision());
+  Serial.print("Chip Cores : ");
+  Serial.println(ESP.getChipCores());
+  Serial.print("Chip freq : ");
+  Serial.println(ESP.getCpuFreqMHz());
+  Serial.print("Flash : ");
+  Serial.println(ESP.getFlashChipSize());
 #endif
   // Buzzer
   pinMode(BUZZER_PIN, OUTPUT);
@@ -37,6 +53,16 @@ void setup() {
 
   // Buttons
   pinMode(CENTER_BUTTON_PIN, INPUT_PULLUP);
+
+  // Wifi init
+#ifdef WIFI
+  wifiManagerStart();
+#endif
+
+  // Multiplayer init
+  multiPlayer = MultiPlayer::getMultiPlayer();
+  multiPlayer->init();
+
   // GamePad init
   gamePad = new GamePad();
   gamePad->init();
@@ -44,7 +70,7 @@ void setup() {
   // MusicManager init
   musicManager = MusicManager::getMusicManager();
   musicManager->init();
-  
+
   // Set leds for matrix to NEOPIXEL type with corresponding pin
   FastLED.addLeds<NEOPIXEL, MATRIX_PIN>(matrixleds, MATRIX_WIDTH * MATRIX_HEIGHT);
   neoMatrix->begin();
@@ -55,6 +81,8 @@ void setup() {
   neoMatrix->setTextColor(colors[0]);
 
   tetrisInit(neoMatrix, musicManager);
+
+
 }
 
 //////////// Boucle principale //////////////
@@ -72,7 +100,6 @@ void loop() {
 
 
   gamePad->processTasks();
-
   GamePad::Command command = gamePad->getCommand();
 
   // Get current button state.
@@ -95,7 +122,14 @@ void loop() {
     }
   }
 
-    tetrisLoop(command);
+  tetrisLoop(command);
+
+  multiPlayer->processMultiPlayer();
+
+#ifdef WIFI
+  wifiManagerHandleClient();
+#endif
+
 
   // Set the last-read button state to the old state.
   oldButtonState = newButtonState;
