@@ -6,7 +6,7 @@
 #include <melody_factory.h>
 
 #define INITIAL_TEMPO     120
-#define TEMPO_INCREMENT   5
+#define TEMPO_INCREMENT   2
 
 class MusicManager
 {
