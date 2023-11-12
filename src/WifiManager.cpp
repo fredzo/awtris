@@ -4,6 +4,7 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <AutoConnect.h>
+#include <WiFiUdp.h>
 
 // Web and Wifi
 WebServer server;
@@ -16,9 +17,9 @@ WifiStatus wifiStatus = WifiStatus::OFF;
 int wifiRssi = 0;
 IPAddress ipAddr;
 long lastStatusCheckTime = 0;
-// Filesystem
-bool filesystemMounted = false;
-static FS* fileSystem = nullptr;
+
+WiFiUDP udp;
+unsigned int localUdpPort = 4445;
 
 void rootPage()
 {
@@ -119,8 +120,8 @@ void wifiManagerStart()
   config.autoReset = false;
   config.autoRise = true;
   config.portalTimeout = 1;     // Don't block on AP mode
-  config.beginTimeout = 3000;   // Only wait 3s at wifi begin not to block Sarsat JRX setartup
-  config.autoReconnect = true;  // Automtic only if we have saved credentials
+  config.beginTimeout = 4000;   // Only wait 3s at wifi begin not to block Sarsat JRX setartup
+  config.autoReconnect = true;  // Automatic only if we have saved credentials
   config.reconnectInterval = 0; // Only reconnect on 1st connection failure
   config.retainPortal = true;
   config.hostName = "awtris";
@@ -129,6 +130,8 @@ void wifiManagerStart()
   portal.config(config);
   WiFi.onEvent(onWifiEvent);
   portal.begin();
+  // Start udp server
+  udp.begin(localUdpPort);
 }
 
 String wifiManagerGetStatusString()
@@ -200,10 +203,36 @@ bool wifiManagerIsConnected()
 #define WIFI_STATUS_CHECK_PERIOD    2000 // Check every 2 seconds
 #define WIFI_RSSI_CHANGE_THRESHOLD  10
 
+char incomingPacket[255];
+
 bool wifiManagerHandleClient()
 {
   // Web and wifi
   portal.handleClient();
+  if(wifiStatus == WifiStatus::CONNECTED)
+  { // Handle UDP packets
+        int packetSize = udp.parsePacket();
+        if (packetSize)
+        {
+            int len = udp.read(incomingPacket, 255);
+            if (len > 0)
+            {
+                incomingPacket[len] = 0;
+                IPAddress remoteIp = udp.remoteIP();
+                if(remoteIp != WiFi.localIP())
+                {
+                  Serial.print("Received packet : ");
+                  Serial.println(incomingPacket);
+                  udp.beginPacket("255.255.255.255", localUdpPort);
+                  char buf[30];
+                  unsigned long testID = millis();
+                  sprintf(buf, "ESP32 send millis: %lu", testID);
+                  udp.printf(buf);
+                  udp.endPacket();
+                }
+            }
+        }
+  }
   // Check for status change
   bool changed = wifiStatusChanged;
   long now = millis();
