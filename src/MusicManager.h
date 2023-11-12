@@ -5,6 +5,9 @@
 #include <melody_player.h>
 #include <melody_factory.h>
 
+#define INITIAL_TEMPO     120
+#define TEMPO_INCREMENT   5
+
 class MusicManager
 {
     public :
@@ -28,11 +31,11 @@ class MusicManager
 
         void stopMelody();
 
-        void playLineSound();
+        void playLineSound(int numlines);
+
+        void increaseTempo(int increment);
 
         void playGameOverSound();
-
-        void handleMusic();
 
         void unmute();
 
@@ -43,10 +46,10 @@ class MusicManager
         MelodyPlayer* effectPlayer;
 
         Melody mainMelody;
-
         Melody gameOverMelody;
-
         Melody lineEffect;
+
+        int tempo = INITIAL_TEMPO;
 
         MusicManager()
         {

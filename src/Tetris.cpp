@@ -543,8 +543,6 @@ void tetrisLoop(GamePad::Command command)
               j-=Mbpl;
             }
           }
-          // Sound effect
-          tetrisMusicManager->playLineSound();
         }
       }
       else
@@ -683,22 +681,27 @@ void tetrisLoop(GamePad::Command command)
                 numlines++;
               }
             }
+            LastScore += 1;
             if (numlines > 0)
             {
               CompletedLines.SetXCounter(15);  // Set delay for highlight display to 15 loops
               Sprites->AddSprite(&CompletedLines);
+              // Sound effect
+              tetrisMusicManager->playLineSound(numlines);
+              // Update tempo
+              tetrisMusicManager->increaseTempo(numlines);
+              if (numlines == 1)
+                LastScore += 4;
+              else if (numlines == 2)
+                LastScore += 12;
+              else if (numlines == 3)
+                LastScore += 20;
+              else if (numlines == 4)
+                LastScore += 40;
+
+              TotalLines += numlines;
+              DropDelay = _max(1, INITIAL_DROP_FRAMES - (TotalLines / 5));
             }
-            LastScore += 1;
-            if (numlines == 1)
-              LastScore += 4;
-            else if (numlines == 2)
-              LastScore += 12;
-            else if (numlines == 3)
-              LastScore += 20;
-            else if (numlines == 4)
-              LastScore += 40;
-            TotalLines += numlines;
-            DropDelay = _max(1, INITIAL_DROP_FRAMES - (TotalLines / 5));
           }
           // Start new block
           deal();

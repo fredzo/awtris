@@ -97,9 +97,6 @@ void loop() {
 
     tetrisLoop(command);
 
-    musicManager->handleMusic();
-
-
   // Set the last-read button state to the old state.
   oldButtonState = newButtonState;
 
