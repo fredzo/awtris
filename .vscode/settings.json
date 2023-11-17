@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "new": "cpp",
-        "*.tcc": "cpp"
-    }
+        "*.tcc": "cpp",
+        "random": "cpp"
+    },
+    "cmake.configureOnOpen": false
 }

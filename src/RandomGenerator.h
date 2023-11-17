@@ -1,13 +1,13 @@
 #ifndef RANDOM_GENERATOR_H
 #define RANDOM_GENERATOR_H
 
-enum Tetrominoe { I = 0, J, L, O, S, T, Z};
+#include <Tetrominoe.h>
 
 void deal();
 
-Tetrominoe getCurrentTetrominoe();
+Tetrominoe::Type getCurrentTetrominoe();
 
-Tetrominoe getNextTetrominoe();
+Tetrominoe::Type getNextTetrominoe();
 
 
 #endif 

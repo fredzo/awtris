@@ -5,13 +5,21 @@
 #include <FastLED.h>
 #include <FastLED_NeoMatrix.h>
 #include <RandomGenerator.h>
+#include <Board.h>
 
 #define TARGET_FRAME_TIME    15  // Desired update rate, though if too many leds it will just run as fast as it can!
 #define INITIAL_DROP_FRAMES  20  // Start of game block drop delay in frames
 #define COMMAND_REPEAT_DELAY  150
 
+#define COMPLETED_LINE_DISPLAY_TIME   15 // 15 Frames
+
 FastLED_NeoMatrix *matrix;
 MusicManager* tetrisMusicManager;
+Board* board; 
+
+int completedLinesDisplayCounter = 0;
+bool hasCompletedLines = false;
+int tetrominoeFallCountdown = 0;
 
 const uint8_t TetrisIData[] = 
 {
@@ -371,6 +379,7 @@ void tetrisInit(FastLED_NeoMatrix * ledMatrix, MusicManager * musicManager)
 {
   matrix = ledMatrix;
   tetrisMusicManager = musicManager;
+  board = new Board();
   Sprites = new cLEDSprites(matrix);
   memset(PlayfieldData, 0, sizeof(PlayfieldData));
   memset(PlayfieldMask, 0, sizeof(PlayfieldMask));
@@ -509,12 +518,16 @@ void tetrisLoop(GamePad::Command command)
     }
     else
     {
-      if (Sprites->IsSprite(&CompletedLines))  // We have highlighted complete lines, delay for visual effect
+      if (hasCompletedLines)  // We have highlighted complete lines, delay for visual effect
       {
-        if (CompletedLines.GetXCounter() > 0)
-          CompletedLines.SetXCounter(CompletedLines.GetXCounter() - 1);
+        if (completedLinesDisplayCounter > 0)
+        {
+          completedLinesDisplayCounter--;
+        }
         else
         {
+          board->removeHighlightedLines();
+          hasCompletedLines = false;
           Sprites->RemoveSprite(&CompletedLines);
           // Remove completed lines from playfield sprite
           uint8_t *Data = PlayfieldData;
@@ -547,7 +560,7 @@ void tetrisLoop(GamePad::Command command)
       }
       else
       {
-        if (CurrentBlock.GetXChange() >= 0) // We have a current block
+        if (board->hasTetrominoe()) // We have a current block
         {
           // Check for user input
           if ( command.a || command.b)
@@ -564,6 +577,7 @@ void tetrisLoop(GamePad::Command command)
               }
               if(command.a)
               {
+                board->rotateTetrominoeLeft();
                 CurrentBlock.DecreaseFrame(); // Rotate to previous frame
                 Sprites->DetectCollisions(&CurrentBlock);
                 if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
@@ -571,6 +585,7 @@ void tetrisLoop(GamePad::Command command)
               }
               else
               {
+                board->rotateTetrominoeRight();
                 CurrentBlock.IncreaseFrame(); // Rotate to next frame
                 Sprites->DetectCollisions(&CurrentBlock);
                 if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
@@ -584,6 +599,7 @@ void tetrisLoop(GamePad::Command command)
             if(millis()-lastLeftCommand >= COMMAND_REPEAT_DELAY)
             {
               lastLeftCommand = millis();
+              board->moveTetrominoeLeft();
               CurrentBlock.m_X--;
               Sprites->DetectCollisions(&CurrentBlock);
               if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
@@ -596,6 +612,7 @@ void tetrisLoop(GamePad::Command command)
             if(millis()-lastRightCommand >= COMMAND_REPEAT_DELAY)
             {
               lastRightCommand = millis();
+              board->moveTetrominoeRight();
               CurrentBlock.m_X++;
               Sprites->DetectCollisions(&CurrentBlock);
               if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
@@ -606,11 +623,12 @@ void tetrisLoop(GamePad::Command command)
           if ( command.down ) // Go down
           {
             CurrentBlock.SetYCounter(1); // Force y increment on next cycle
+            tetrominoeFallCountdown = 1; // Force drop on next cycle
           }
             
           // Do block checks for bottom or collision
-          if (CurrentBlock.GetYCounter() <= 1) // Current block has to go down
-          {
+          if (tetrominoeFallCountdown <= 1) // Current block has to go down
+          { // TODO
             if (CurrentBlock.GetFlags() & SPRITE_EDGE_Y_MAX)
               NextBlock = true; // Block as reached the bottom => send next block
             else
@@ -636,7 +654,8 @@ void tetrisLoop(GamePad::Command command)
                 else
                 {
                   // Game over
-                  CurrentBlock.SetYCounter(2);  // Stop last block moving down!
+                  CurrentBlock.SetYCounter(2);  // Stop last block from moving down!
+                  tetrominoeFallCountdown = 2;
                   AttractMode = true;
                   tetrisMusicManager->playGameOverSound();
                   if (LastScore > HighScore)
@@ -656,11 +675,20 @@ void tetrisLoop(GamePad::Command command)
         }
         if (NextBlock)  // Start new block
         {
-          if (CurrentBlock.GetXChange() >= 0) // We have a current block so add to playfield before creating new block
+          if (board->hasTetrominoe()) // We have a current block so add to playfield before creating new block
           {
+            board->sealTetrominoe();
             Playfield.Combine(CurrentBlock.m_X, CurrentBlock.m_Y, &CurrentBlock);
             Sprites->RemoveSprite(&CurrentBlock);
             // Make completed lines highlight sprite & score
+            for(int i = 0; i < BOARD_HEIGHT ; i++)
+            {
+              if(board->isLineComplete(i))
+              {
+                board->highlightLine(i);
+                hasCompletedLines = true;
+              }
+            }
             memset(CompletedLinesData, 0, sizeof(CompletedLinesData));
             CompletedLines.m_Y = -1;
             uint8_t *Mask = PlayfieldMask;
@@ -684,8 +712,9 @@ void tetrisLoop(GamePad::Command command)
             LastScore += 1;
             if (numlines > 0)
             {
-              CompletedLines.SetXCounter(15);  // Set delay for highlight display to 15 loops
+              completedLinesDisplayCounter = COMPLETED_LINE_DISPLAY_TIME;   // Set delay for highlight display to 15 loops
               Sprites->AddSprite(&CompletedLines);
+              hasCompletedLines = true;
               // Sound effect
               tetrisMusicManager->playLineSound(numlines);
               // Update tempo
@@ -705,7 +734,9 @@ void tetrisLoop(GamePad::Command command)
           }
           // Start new block
           deal();
-          Tetrominoe j = getCurrentTetrominoe();
+          Tetrominoe::Type j = getCurrentTetrominoe();
+          board->addTetrominoe(j);
+          tetrominoeFallCountdown = DropDelay;
           CurrentBlock.Setup(TETRIS_SPR_WIDTH, TETRIS_SPR_WIDTH, TetrisSprData[j], 4, _3BIT, TetrisColours, TetrisSprMask[j]);
           CurrentBlock.SetPositionFrameMotionOptions((SCREEN_WIDTH/2)-1, 0, 0, 0, 0, 0, +1, DropDelay, SPRITE_DETECT_COLLISION | SPRITE_DETECT_EDGE);
           CurrentBlock.SetXChange(j);
@@ -713,6 +744,7 @@ void tetrisLoop(GamePad::Command command)
           NextBlock = false;
         }
         Sprites->UpdateSprites();
+        tetrominoeFallCountdown--;
       }
     }
     Sprites->RenderSprites();

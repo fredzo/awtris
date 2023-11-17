@@ -2,11 +2,11 @@
 
 #include <Arduino.h>
 
-Tetrominoe bag[7];
+Tetrominoe::Type bag[7];
 
 int currentBagIndex = -1;
-Tetrominoe currentTetrominoe;
-Tetrominoe nextTetrominoe;
+Tetrominoe::Type currentTetrominoe;
+Tetrominoe::Type nextTetrominoe;
 
 void deal()
 {
@@ -21,13 +21,13 @@ void deal()
     // Load the bag
     for (int i=0; i<7; i++)
     {
-      bag[i] = (Tetrominoe)i;
+      bag[i] = (Tetrominoe::Type)i;
     }
     // Shuffle it
     for (int i=0; i<7; i++)
     {
       int r = random(7);
-      Tetrominoe temp = bag[i];
+      Tetrominoe::Type temp = bag[i];
       bag[i] = bag[r];
       bag[r] = temp;
     }
@@ -41,12 +41,12 @@ void deal()
   }
 }
 
-Tetrominoe getCurrentTetrominoe()
+Tetrominoe::Type getCurrentTetrominoe()
 {
   return currentTetrominoe;
 }
 
-Tetrominoe getNextTetrominoe()
+Tetrominoe::Type getNextTetrominoe()
 {
   return nextTetrominoe;
 }
