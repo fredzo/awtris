@@ -98,6 +98,7 @@ void TextManager::renderText()
         if(scrollPosition >= textPixels)
         {
           scrollPosition = 0;
+          scrollWaitStart = millis();
         }
         scrollCountDown = 0xFF;
       }
