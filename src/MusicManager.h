@@ -47,7 +47,9 @@ class MusicManager
 
         Melody mainMelody;
         Melody gameOverMelody;
-        Melody lineEffect;
+        Melody oneLineEffect;
+        Melody twoThreeLinesEffect;
+        Melody tetrisEffect;
 
         int tempo = INITIAL_TEMPO;
 
