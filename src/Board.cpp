@@ -25,14 +25,13 @@ bool Board::hasTetrominoe()
 
 void Board::sealTetrominoe()
 {
-    if(currentTetrominoe != NULL) return;
-    bool** shape = currentTetrominoe->getShape();
+    if(currentTetrominoe == NULL) return;
     Pixel pixel = (Pixel)currentTetrominoe->type;
-    for(int i = 0 ; i <= TETROMINOE_SIZE; i++)
+    for(int i = 0 ; i < TETROMINOE_SIZE; i++)
     {
-        for(int j = 0 ; j <= TETROMINOE_SIZE; j++)
+        for(int j = 0 ; j < TETROMINOE_SIZE; j++)
         {
-            if(shape[i][j])
+            if(currentTetrominoe->getShape(i,j))
             {
                 pixels[currentTetrominoe->x+i][currentTetrominoe->y+j] = pixel;
             }
@@ -44,14 +43,13 @@ void Board::sealTetrominoe()
 
 bool Board::detectCollision()
 {
-    if(currentTetrominoe != NULL) return false;
-    bool** shape = currentTetrominoe->getShape();
+    if(currentTetrominoe == NULL) return false;
     int x,y;
-    for(int i = 0 ; i <= TETROMINOE_SIZE; i++)
+    for(int i = 0 ; i < TETROMINOE_SIZE; i++)
     {
-        for(int j = 0 ; j <= TETROMINOE_SIZE; j++)
+        for(int j = 0 ; j < TETROMINOE_SIZE; j++)
         {
-            if(shape[i][j])
+            if(currentTetrominoe->getShape(i,j))
             {
                 x = currentTetrominoe->x+i;
                 // Detect border collision
@@ -69,7 +67,7 @@ bool Board::detectCollision()
  
 bool Board::rotateTetrominoeLeft()
 {
-    if(currentTetrominoe != NULL) return false;
+    if(currentTetrominoe == NULL) return false;
     currentTetrominoe->rotateLeft();
     if(detectCollision())
     {
@@ -81,7 +79,7 @@ bool Board::rotateTetrominoeLeft()
 
 bool Board::rotateTetrominoeRight()
 {
-    if(currentTetrominoe != NULL) return false;
+    if(currentTetrominoe == NULL) return false;
     currentTetrominoe->rotateRight();
     if(detectCollision())
     {
@@ -93,7 +91,7 @@ bool Board::rotateTetrominoeRight()
 
 bool Board::moveTetrominoeLeft()
 {
-    if(currentTetrominoe != NULL) return false;
+    if(currentTetrominoe == NULL) return false;
     currentTetrominoe->x--;
     if(detectCollision())
     {
@@ -105,7 +103,7 @@ bool Board::moveTetrominoeLeft()
 
 bool Board::moveTetrominoeRight()
 {
-    if(currentTetrominoe != NULL) return false;
+    if(currentTetrominoe == NULL) return false;
     currentTetrominoe->x++;
     if(detectCollision())
     {
@@ -117,7 +115,7 @@ bool Board::moveTetrominoeRight()
 
 bool Board::moveTetrominoeDown()
 {
-    if(currentTetrominoe != NULL) return false;
+    if(currentTetrominoe == NULL) return false;
     currentTetrominoe->y++;
     if(detectCollision())
     {
@@ -141,11 +139,12 @@ void Board::removeHighlightedLines()
     {
         if(pixels[0][i] == Pixel::LINE)
         {   // Remove this line
+            Serial.println("Remove line !");
             for(int j = i ;  j > 0 ; j--)
             {   // Move upper lines down
                 for(int k = 0 ; k < SCREEN_WIDTH ; k++)
                 {   // Copy each pixel of the line
-                    pixels[i][k] = pixels[i-1][k];
+                    pixels[k][j] = pixels[k][j-1];
                 }
             }
         }
@@ -161,4 +160,26 @@ bool Board::isLineComplete(int lineY)
     return true;
 }
 
+const struct CRGB PIXEL_COLORS[] = { CRGB(0, 255, 255), CRGB(0, 0, 255), CRGB(255, 100, 0), CRGB(255, 255, 0), CRGB(20, 255, 20), CRGB(255, 0, 255), CRGB(255, 0, 0), CRGB(255, 255, 255) };
+
+void Board::render(FastLED_NeoMatrix * ledMatrix)
+{
+    // First render tetrominoe
+    if(currentTetrominoe != NULL)
+    {
+        currentTetrominoe->render(ledMatrix);
+    }
+    // The draw the board's pixels
+    for(int i = 0 ; i < SCREEN_WIDTH; i++)
+    {
+        for(int j = 0 ; j < SCREEN_HEIGHT; j++)
+        {
+            Pixel pixel = pixels[i][j];
+            if(pixel >= 0)
+            {
+                ledMatrix->drawPixel(i,j,PIXEL_COLORS[pixel]);
+            }
+        }
+    }
+}
 

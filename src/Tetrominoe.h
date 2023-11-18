@@ -24,7 +24,7 @@ class Tetrominoe
 
         Tetrominoe(Type t) : type(t) {};
 
-        bool** getShape();
+        bool getShape(int x, int y);
 
 };
 

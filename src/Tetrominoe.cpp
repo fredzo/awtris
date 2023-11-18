@@ -7,7 +7,7 @@ static bool SHAPES[TETROMINOE_NUM][TETROMINOE_ROTATIONS][TETROMINOE_SIZE][TETROM
             {0, 0, 0, 0},
             {1, 1, 1, 1},
             {0, 0, 0, 0},
-            {1, 0, 0, 0}
+            {0, 0, 0, 0}
         },
  
         {
@@ -237,9 +237,9 @@ void Tetrominoe::rotateRight()
 void Tetrominoe::render(FastLED_NeoMatrix * ledMatrix)
 {
     CRGB color = TETROMINOE_COLORS[(int)type];
-    for(int i = 0 ; i <= TETROMINOE_SIZE; i++)
+    for(int i = 0 ; i < TETROMINOE_SIZE; i++)
     {
-        for(int j = 0 ; j <= TETROMINOE_SIZE; j++)
+        for(int j = 0 ; j < TETROMINOE_SIZE; j++)
         {
             if(SHAPES[(int)type][rotation][i][j])
             {
@@ -249,9 +249,9 @@ void Tetrominoe::render(FastLED_NeoMatrix * ledMatrix)
     }
 }
 
-bool** Tetrominoe::getShape()
+bool Tetrominoe::getShape(int x, int y)
 {
-    return (bool**)SHAPES[(int)type][rotation];
+    return SHAPES[(int)type][rotation][x][y];
 }
 
 

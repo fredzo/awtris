@@ -629,7 +629,17 @@ void tetrisLoop(GamePad::Command command)
           // Do block checks for bottom or collision
           if (tetrominoeFallCountdown <= 1) // Current block has to go down
           { // TODO
-            if (CurrentBlock.GetFlags() & SPRITE_EDGE_Y_MAX)
+            tetrominoeFallCountdown = DropDelay;
+            if(!board->moveTetrominoeDown())
+            {
+              NextBlock = true;
+            }
+            else
+            { // TODO check for game over
+
+            }
+
+/*            if (CurrentBlock.GetFlags() & SPRITE_EDGE_Y_MAX)
               NextBlock = true; // Block as reached the bottom => send next block
             else
             {
@@ -666,11 +676,12 @@ void tetrisLoop(GamePad::Command command)
                   else
                     sprintf((char *)GameOverMsg, "%sGAME OVER%sSCORE %u%s", BlankMsg, BlankMsg, LastScore, BlankMsg);
                   sprintf((char *)AttractMsg, "%sTETRIS%sSCORE %u%sHIGH %u%sANY BUTTON TO START%s", BlankMsg, BlankMsg, LastScore, BlankMsg, HighScore, BlankMsg, BlankMsg);
-                  /*TetrisMsg.SetText(GameOverMsg, strlen((char *)GameOverMsg));
-                  TetrisMsg.SetBackgroundMode(BACKGND_DIMMING, 0x40);*/
+                  //TetrisMsg.SetText(GameOverMsg, strlen((char *)GameOverMsg));
+                  //TetrisMsg.SetBackgroundMode(BACKGND_DIMMING, 0x40);
+                
                 }
               }
-            }
+            }*/
           }
         }
         if (NextBlock)  // Start new block
@@ -680,20 +691,20 @@ void tetrisLoop(GamePad::Command command)
             board->sealTetrominoe();
             Playfield.Combine(CurrentBlock.m_X, CurrentBlock.m_Y, &CurrentBlock);
             Sprites->RemoveSprite(&CurrentBlock);
+            memset(CompletedLinesData, 0, sizeof(CompletedLinesData));
+            CompletedLines.m_Y = -1;
+            uint8_t *Mask = PlayfieldMask;
+            uint16_t Mbpl = (SCREEN_WIDTH + 7) / 8;
+            int16_t j, numlines = 0;
             // Make completed lines highlight sprite & score
             for(int i = 0; i < BOARD_HEIGHT ; i++)
             {
               if(board->isLineComplete(i))
               {
                 board->highlightLine(i);
-                hasCompletedLines = true;
+                numlines++;
               }
             }
-            memset(CompletedLinesData, 0, sizeof(CompletedLinesData));
-            CompletedLines.m_Y = -1;
-            uint8_t *Mask = PlayfieldMask;
-            uint16_t Mbpl = (SCREEN_WIDTH + 7) / 8;
-            int16_t j, numlines = 0;
             for (int16_t i=(SCREEN_HEIGHT-1)*Mbpl, y=0; i>=0; i-=Mbpl,++y)
             {
               for (j=0; j<SCREEN_WIDTH; j+=8)
@@ -747,7 +758,8 @@ void tetrisLoop(GamePad::Command command)
         tetrominoeFallCountdown--;
       }
     }
-    Sprites->RenderSprites();
+    //Sprites->RenderSprites();
+    board->render(matrix);
     // Show a hint for next Tetrominoe
     matrix->drawPixel(7,0,TetrisColours[getNextTetrominoe()]);
     if (AttractMode)

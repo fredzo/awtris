@@ -14,10 +14,11 @@
 
 class Board
 {
-    enum Pixel { OFF = -1, I = 0, J, L, O, S, T, Z, LINE = 10 };
+    enum Pixel { OFF = -1, I = 0, J, L, O, S, T, Z, LINE };
     public :
-        void render(FastLED_NeoMatrix * ledMatrix);
         Board();
+
+        void render(FastLED_NeoMatrix * ledMatrix);
 
         void addTetrominoe(Tetrominoe::Type type);
         bool hasTetrominoe();
