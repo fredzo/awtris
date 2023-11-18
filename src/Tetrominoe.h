@@ -7,6 +7,18 @@
 #define TETROMINOE_NUM        7
 #define TETROMINOE_ROTATIONS  4
 
+const struct CRGB TETROMINOE_COLORS[] = 
+{ 
+    CRGB(0, 255, 255),  // I
+    CRGB(0, 0, 255),    // J
+    CRGB(255, 100, 0),  // L
+    CRGB(255, 255, 0),  // O
+    CRGB(20, 255, 20),  // S
+    CRGB(255, 0, 255),  // T
+    CRGB(255, 0, 0),    // Z
+    CRGB(255, 255, 255) // Comleted line
+};
+
 class Tetrominoe
 {
     public :

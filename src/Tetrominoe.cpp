@@ -213,9 +213,6 @@ static bool SHAPES[TETROMINOE_NUM][TETROMINOE_ROTATIONS][TETROMINOE_SIZE][TETROM
     }
 };
 
-const struct CRGB TETROMINOE_COLORS[] = { CRGB(0, 255, 255), CRGB(0, 0, 255), CRGB(255, 100, 0), CRGB(255, 255, 0), CRGB(20, 255, 20), CRGB(255, 0, 255), CRGB(255, 0, 0) };
-
-
 void Tetrominoe::rotateLeft()
 {
     rotation--;

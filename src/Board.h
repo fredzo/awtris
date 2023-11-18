@@ -19,9 +19,11 @@ class Board
     public :
         Board();
 
+        void clearBoard();
+
         void render(FastLED_NeoMatrix * ledMatrix);
 
-        void addTetrominoe(Tetrominoe::Type type);
+        bool addTetrominoe(Tetrominoe::Type type);
         bool hasTetrominoe();
         void sealTetrominoe();
 

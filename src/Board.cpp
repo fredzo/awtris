@@ -2,7 +2,11 @@
 
 Board::Board()
 {
-    // Init pixels
+    clearBoard();
+}
+ 
+void Board::clearBoard()
+{   // Clear all pixels
     for(int i = 0; i < BOARD_WIDTH; ++i)
     {
         for(int j = 0; j < BOARD_HEIGHT; ++j)
@@ -12,10 +16,20 @@ Board::Board()
     }
 }
  
-void Board::addTetrominoe(Tetrominoe::Type type)
+bool Board::addTetrominoe(Tetrominoe::Type type)
 {
     currentTetrominoe = new Tetrominoe(type);
     currentTetrominoe->x = (SCREEN_WIDTH/2)-1;
+    if(detectCollision())
+    {
+        delete currentTetrominoe;
+        currentTetrominoe = NULL;
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }
 
 bool Board::hasTetrominoe()
@@ -131,7 +145,6 @@ bool Board::moveTetrominoeLeft()
 {
     if(currentTetrominoe == NULL) return false;
     currentTetrominoe->x--;
-    Serial.println(currentTetrominoe->x);
     if(detectCollision())
     {
         currentTetrominoe->x++;
@@ -185,6 +198,7 @@ void Board::removeHighlightedLines()
                     pixels[k][j] = pixels[k][j-1];
                 }
             }
+            // Continue from current line instead of the next one to check if it is complete too
             i++;
         }
     }
@@ -194,12 +208,10 @@ bool Board::isLineComplete(int lineY)
 {
     for(int i=0; i < SCREEN_WIDTH ; i++)
     {   // Check for empty pixel
-        if(pixels[i][lineY] < 0) return false;
+        if(pixels[i][lineY] == Pixel::OFF) return false;
     }
     return true;
 }
-
-const struct CRGB PIXEL_COLORS[] = { CRGB(0, 255, 255), CRGB(0, 0, 255), CRGB(255, 100, 0), CRGB(255, 255, 0), CRGB(20, 255, 20), CRGB(255, 0, 255), CRGB(255, 0, 0), CRGB(255, 255, 255) };
 
 void Board::render(FastLED_NeoMatrix * ledMatrix)
 {
@@ -216,9 +228,8 @@ void Board::render(FastLED_NeoMatrix * ledMatrix)
             Pixel pixel = pixels[i][j];
             if(pixel >= 0)
             {
-                ledMatrix->drawPixel(i,j,PIXEL_COLORS[pixel]);
+                ledMatrix->drawPixel(i,j,TETROMINOE_COLORS[pixel]);
             }
         }
     }
 }
-

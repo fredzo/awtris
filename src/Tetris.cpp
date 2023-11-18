@@ -1,7 +1,6 @@
 #include <Tetris.h>
 
 #include <Arduino.h>
-#include <LEDSprites.h>
 #include <FastLED.h>
 #include <FastLED_NeoMatrix.h>
 #include <RandomGenerator.h>
@@ -20,342 +19,6 @@ Board* board;
 int completedLinesDisplayCounter = 0;
 bool hasCompletedLines = false;
 int tetrominoeFallCountdown = 0;
-
-const uint8_t TetrisIData[] = 
-{
-  // Frame 1
-  B8_3BIT(00000000),
-  B8_3BIT(00000000),
-  B8_3BIT(00000000),
-  B8_3BIT(11110000),
-  // Frame 2
-  B8_3BIT(10000000),
-  B8_3BIT(10000000),
-  B8_3BIT(10000000),
-  B8_3BIT(10000000),
-  // Frame 3
-  B8_3BIT(00000000),
-  B8_3BIT(00000000),
-  B8_3BIT(00000000),
-  B8_3BIT(11110000),
-  // Frame 4
-  B8_3BIT(10000000),
-  B8_3BIT(10000000),
-  B8_3BIT(10000000),
-  B8_3BIT(10000000)
-};
-const uint8_t TetrisIMask[] = 
-{
-  // Frame 1
-  B8_1BIT(00000000),
-  B8_1BIT(00000000),
-  B8_1BIT(00000000),
-  B8_1BIT(11110000),
-  // Frame 2
-  B8_1BIT(10000000),
-  B8_1BIT(10000000),
-  B8_1BIT(10000000),
-  B8_1BIT(10000000),
-  // Frame 3
-  B8_1BIT(00000000),
-  B8_1BIT(00000000),
-  B8_1BIT(00000000),
-  B8_1BIT(11110000),
-  // Frame 4
-  B8_1BIT(10000000),
-  B8_1BIT(10000000),
-  B8_1BIT(10000000),
-  B8_1BIT(10000000)
-};
-const uint8_t TetrisJData[] = 
-{
-  // Frame 1
-  B8_3BIT(00000000),
-  B8_3BIT(00000000),
-  B8_3BIT(22200000),
-  B8_3BIT(00200000),
-  // Frame 2
-  B8_3BIT(00000000),
-  B8_3BIT(02000000),
-  B8_3BIT(02000000),
-  B8_3BIT(22000000),
-  // Frame 3
-  B8_3BIT(00000000),
-  B8_3BIT(00000000),
-  B8_3BIT(20000000),
-  B8_3BIT(22200000),
-  // Frame 4
-  B8_3BIT(00000000),
-  B8_3BIT(22000000),
-  B8_3BIT(20000000),
-  B8_3BIT(20000000)
-};
-const uint8_t TetrisJMask[] = 
-{
-  // Frame 1
-  B8_1BIT(00000000),
-  B8_1BIT(00000000),
-  B8_1BIT(11100000),
-  B8_1BIT(00100000),
-  // Frame 2
-  B8_1BIT(00000000),
-  B8_1BIT(01000000),
-  B8_1BIT(01000000),
-  B8_1BIT(11000000),
-  // Frame 3
-  B8_1BIT(00000000),
-  B8_1BIT(00000000),
-  B8_1BIT(10000000),
-  B8_1BIT(11100000),
-  // Frame 4
-  B8_1BIT(00000000),
-  B8_1BIT(11000000),
-  B8_1BIT(10000000),
-  B8_1BIT(10000000)
-};
-const uint8_t TetrisLData[] = 
-{
-  // Frame 1
-  B8_3BIT(00000000),
-  B8_3BIT(00000000),
-  B8_3BIT(33300000),
-  B8_3BIT(30000000),
-  // Frame 2
-  B8_3BIT(00000000),
-  B8_3BIT(33000000),
-  B8_3BIT(03000000),
-  B8_3BIT(03000000),
-  // Frame 3
-  B8_3BIT(00000000),
-  B8_3BIT(00000000),
-  B8_3BIT(00300000),
-  B8_3BIT(33300000),
-  // Frame 4
-  B8_3BIT(00000000),
-  B8_3BIT(30000000),
-  B8_3BIT(30000000),
-  B8_3BIT(33000000)
-};
-const uint8_t TetrisLMask[] = 
-{
-  // Frame 1
-  B8_1BIT(00000000),
-  B8_1BIT(00000000),
-  B8_1BIT(11100000),
-  B8_1BIT(10000000),
-  // Frame 2
-  B8_1BIT(00000000),
-  B8_1BIT(11000000),
-  B8_1BIT(01000000),
-  B8_1BIT(01000000),
-  // Frame 3
-  B8_1BIT(00000000),
-  B8_1BIT(00000000),
-  B8_1BIT(00100000),
-  B8_1BIT(11100000),
-  // Frame 4
-  B8_1BIT(00000000),
-  B8_1BIT(10000000),
-  B8_1BIT(10000000),
-  B8_1BIT(11000000)
-};
-const uint8_t TetrisOData[] = 
-{
-  // Frame 1
-  B8_3BIT(00000000),
-  B8_3BIT(00000000),
-  B8_3BIT(44000000),
-  B8_3BIT(44000000),
-  // Frame 2
-  B8_3BIT(00000000),
-  B8_3BIT(00000000),
-  B8_3BIT(44000000),
-  B8_3BIT(44000000),
-  // Frame 3
-  B8_3BIT(00000000),
-  B8_3BIT(00000000),
-  B8_3BIT(44000000),
-  B8_3BIT(44000000),
-  // Frame 4
-  B8_3BIT(00000000),
-  B8_3BIT(00000000),
-  B8_3BIT(44000000),
-  B8_3BIT(44000000)
-};
-const uint8_t TetrisOMask[] = 
-{
-  // Frame 1
-  B8_1BIT(00000000),
-  B8_1BIT(00000000),
-  B8_1BIT(11000000),
-  B8_1BIT(11000000),
-  // Frame 2
-  B8_1BIT(00000000),
-  B8_1BIT(00000000),
-  B8_1BIT(11000000),
-  B8_1BIT(11000000),
-  // Frame 3
-  B8_1BIT(00000000),
-  B8_1BIT(00000000),
-  B8_1BIT(11000000),
-  B8_1BIT(11000000),
-  // Frame 4
-  B8_1BIT(00000000),
-  B8_1BIT(00000000),
-  B8_1BIT(11000000),
-  B8_1BIT(11000000)
-};
-const uint8_t TetrisSData[] = 
-{
-  // Frame 1
-  B8_3BIT(00000000),
-  B8_3BIT(00000000),
-  B8_3BIT(05500000),
-  B8_3BIT(55000000),
-  // Frame 2
-  B8_3BIT(00000000),
-  B8_3BIT(50000000),
-  B8_3BIT(55000000),
-  B8_3BIT(05000000),
-  // Frame 3
-  B8_3BIT(00000000),
-  B8_3BIT(00000000),
-  B8_3BIT(05500000),
-  B8_3BIT(55000000),
-  // Frame 4
-  B8_3BIT(00000000),
-  B8_3BIT(50000000),
-  B8_3BIT(55000000),
-  B8_3BIT(05000000)
-};
-const uint8_t TetrisSMask[] = 
-{
-  // Frame 1
-  B8_1BIT(00000000),
-  B8_1BIT(00000000),
-  B8_1BIT(01100000),
-  B8_1BIT(11000000),
-  // Frame 2
-  B8_1BIT(00000000),
-  B8_1BIT(10000000),
-  B8_1BIT(11000000),
-  B8_1BIT(01000000),
-  // Frame 3
-  B8_1BIT(00000000),
-  B8_1BIT(00000000),
-  B8_1BIT(01100000),
-  B8_1BIT(11000000),
-  // Frame 4
-  B8_1BIT(00000000),
-  B8_1BIT(10000000),
-  B8_1BIT(11000000),
-  B8_1BIT(01000000)
-};
-const uint8_t TetrisTData[] = 
-{
-  // Frame 1
-  B8_3BIT(00000000),
-  B8_3BIT(00000000),
-  B8_3BIT(66600000),
-  B8_3BIT(06000000),
-  // Frame 2
-  B8_3BIT(00000000),
-  B8_3BIT(06000000),
-  B8_3BIT(66000000),
-  B8_3BIT(06000000),
-  // Frame 3
-  B8_3BIT(00000000),
-  B8_3BIT(00000000),
-  B8_3BIT(06000000),
-  B8_3BIT(66600000),
-  // Frame 4
-  B8_3BIT(00000000),
-  B8_3BIT(60000000),
-  B8_3BIT(66000000),
-  B8_3BIT(60000000)
-};
-const uint8_t TetrisTMask[] = 
-{
-  // Frame 1
-  B8_1BIT(00000000),
-  B8_1BIT(00000000),
-  B8_1BIT(11100000),
-  B8_1BIT(01000000),
-  // Frame 2
-  B8_1BIT(00000000),
-  B8_1BIT(01000000),
-  B8_1BIT(11000000),
-  B8_1BIT(01000000),
-  // Frame 3
-  B8_1BIT(00000000),
-  B8_1BIT(00000000),
-  B8_1BIT(01000000),
-  B8_1BIT(11100000),
-  // Frame 4
-  B8_1BIT(00000000),
-  B8_1BIT(10000000),
-  B8_1BIT(11000000),
-  B8_1BIT(10000000)
-};
-const uint8_t TetrisZData[] = 
-{
-  // Frame 1
-  B8_3BIT(00000000),
-  B8_3BIT(00000000),
-  B8_3BIT(77000000),
-  B8_3BIT(07700000),
-  // Frame 2
-  B8_3BIT(00000000),
-  B8_3BIT(07000000),
-  B8_3BIT(77000000),
-  B8_3BIT(70000000),
-  // Frame 3
-  B8_3BIT(00000000),
-  B8_3BIT(00000000),
-  B8_3BIT(77000000),
-  B8_3BIT(07700000),
-  // Frame 4
-  B8_3BIT(00000000),
-  B8_3BIT(07000000),
-  B8_3BIT(77000000),
-  B8_3BIT(70000000)
-};
-const uint8_t TetrisZMask[] = 
-{
-  // Frame 1
-  B8_1BIT(00000000),
-  B8_1BIT(00000000),
-  B8_1BIT(11000000),
-  B8_1BIT(01100000),
-  // Frame 2
-  B8_1BIT(00000000),
-  B8_1BIT(01000000),
-  B8_1BIT(11000000),
-  B8_1BIT(10000000),
-  // Frame 3
-  B8_1BIT(00000000),
-  B8_1BIT(00000000),
-  B8_1BIT(11000000),
-  B8_1BIT(01100000),
-  // Frame 4
-  B8_1BIT(00000000),
-  B8_1BIT(01000000),
-  B8_1BIT(11000000),
-  B8_1BIT(10000000)
-};
-
-#define TETRIS_SPR_WIDTH  4
-#define TETRIS_SPR_HEIGHT 4
-const uint8_t *TetrisSprData[] = { TetrisIData, TetrisJData, TetrisLData, TetrisOData, TetrisSData, TetrisTData, TetrisZData };
-const uint8_t *TetrisSprMask[] = { TetrisIMask, TetrisJMask, TetrisLMask, TetrisOMask, TetrisSMask, TetrisTMask, TetrisZMask};
-const struct CRGB TetrisColours[] = { CRGB(0, 255, 255), CRGB(0, 0, 255), CRGB(255, 100, 0), CRGB(255, 255, 0), CRGB(20, 255, 20), CRGB(255, 0, 255), CRGB(255, 0, 0) };
-
-uint8_t PlayfieldData[SCREEN_HEIGHT * ((SCREEN_WIDTH + 7) / 8) * _3BIT];
-uint8_t PlayfieldMask[SCREEN_HEIGHT * ((SCREEN_WIDTH + 7) / 8) * _1BIT];
-uint8_t CompletedLinesData[TETRIS_SPR_HEIGHT * ((SCREEN_WIDTH + 7) / 8) * _1BIT];
-const struct CRGB CompletedLinesColour[] = { CRGB(255, 255, 255) };
-cSprite Playfield, CompletedLines, CurrentBlock;
-cLEDSprites* Sprites;
 
 unsigned char AttractMsg[144], GameOverMsg[88];
 char BlankMsg[32];
@@ -380,16 +43,6 @@ void tetrisInit(FastLED_NeoMatrix * ledMatrix, MusicManager * musicManager)
   matrix = ledMatrix;
   tetrisMusicManager = musicManager;
   board = new Board();
-  Sprites = new cLEDSprites(matrix);
-  memset(PlayfieldData, 0, sizeof(PlayfieldData));
-  memset(PlayfieldMask, 0, sizeof(PlayfieldMask));
-  Playfield.Setup(matrix->width(), matrix->height(), PlayfieldData, 1, _3BIT, TetrisColours, PlayfieldMask);
-  Playfield.SetPositionFrameMotionOptions(0, 0, 0, 0, 0, 0, 0, 0, 0);
-  Sprites->AddSprite(&Playfield);
-
-  memset(CompletedLinesData, 0, sizeof(CompletedLinesData));
-  CompletedLines.Setup(matrix->width(), TETRIS_SPR_HEIGHT, CompletedLinesData, 1, _1BIT, CompletedLinesColour, CompletedLinesData);
-  CompletedLines.SetPositionFrameMotionOptions(0, 0, 0, 0, 0, 0, 0, 0, 0);
 
   /*TetrisMsg.SetFont(MatriseFontData);
   sprintf((char *)BlankMsg, "%.*s", _min(((leds.Height() + TetrisMsg.FontHeight()) / (TetrisMsg.FontHeight() + 1)), (int)sizeof(BlankMsg) - 1), "                              ");
@@ -414,7 +67,6 @@ void tetrisLoop(GamePad::Command command)
   {
     LastLoop = millis();
     matrix->clear();
-
     
     if ( (command.plus || command.minus))
     {
@@ -500,231 +152,104 @@ void tetrisLoop(GamePad::Command command)
     }
 
     if (AttractMode)
-    {
+    { // Waiting for the player
       if (command.hasCommand())
-      {
+      { // Start new game !
         AttractMode = false;
-        memset(PlayfieldData, 0, sizeof(PlayfieldData));
-        memset(PlayfieldMask, 0, sizeof(PlayfieldMask));
-        Sprites->RemoveSprite(&CurrentBlock);
         LastScore = 0;
         TotalLines = 0;
         DropDelay = INITIAL_DROP_FRAMES;
-        CurrentBlock.SetXChange(-1);
         NextBlock = true;
         command = GamePad::NO_COMMAND;
+        board->clearBoard();
         tetrisMusicManager->startMelody();
       }
     }
     else
-    {
-      if (hasCompletedLines)  // We have highlighted complete lines, delay for visual effect
-      {
+    { // Game started
+      if (hasCompletedLines)
+      { // We have highlighted complete lines, delay for visual effect
         if (completedLinesDisplayCounter > 0)
-        {
+        { // Wait for completed lines to be displayed
           completedLinesDisplayCounter--;
         }
         else
-        {
+        { // Completed lines display finished => remove them from the board
           board->removeHighlightedLines();
           hasCompletedLines = false;
-          Sprites->RemoveSprite(&CompletedLines);
-          // Remove completed lines from playfield sprite
-          uint8_t *Data = PlayfieldData;
-          uint8_t *Mask = PlayfieldMask;
-          uint16_t Mbpl = (SCREEN_WIDTH + 7) / 8;
-          uint16_t Dbpl = Mbpl * _3BIT;
-          int16_t k;
-          for (int16_t i=0,j=0; i<(SCREEN_HEIGHT-1)*Dbpl; i+=Dbpl,j+=Mbpl)
-          {
-            for (k=0; k<SCREEN_WIDTH; k+=8)
-            {
-              if ((uint8_t)(0xff00 >> _min(SCREEN_WIDTH - k, 8)) != Mask[j + (k / 8)])
-                break;
-            }
-            if (k >= SCREEN_WIDTH)
-            {
-              //memmove(&Data[Dbpl], &Data[0], i);
-              //memset(&Data[0], 0, Dbpl);
-              //memmove(&Mask[Mbpl], &Mask[0], j);
-              //memset(&Mask[0], 0, Mbpl);
-              memmove(&Data[i], &Data[i+Dbpl], ((SCREEN_HEIGHT-1)*Dbpl)-i);
-              memset(&Data[(SCREEN_HEIGHT-1)*Dbpl], 0, Dbpl);
-              memmove(&Mask[j], &Mask[j+Mbpl], ((SCREEN_HEIGHT-1)*Mbpl)-j);
-              memset(&Mask[(SCREEN_HEIGHT-1)*Mbpl], 0, Mbpl);
-              i-=Dbpl;
-              j-=Mbpl;
-            }
-          }
         }
       }
       else
       {
-        if (board->hasTetrominoe()) // We have a current block
-        {
-          // Check for user input
+        if (board->hasTetrominoe()) // We have a current Tetrominoe
+        { // Check for user input
           if ( command.a || command.b)
           {
             if(millis()-lastRotateCommand >= COMMAND_REPEAT_DELAY)
             {
               lastRotateCommand = millis();
-              if ((CurrentBlock.GetCurrentFrame() % 2) == 1)  // Frame 1 or 3
-              {
-                if (CurrentBlock.GetXChange() == 0) // I shape, vertical
-                  CurrentBlock.m_X = _min(CurrentBlock.m_X, SCREEN_WIDTH - TETRIS_SPR_WIDTH);
-                else if ((CurrentBlock.GetXChange() != 3) && (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MAX)) // Not O shape and near border => give some space
-                  --CurrentBlock.m_X;
-              }
               if(command.a)
-              {
+              { // Rotate left
                 board->rotateTetrominoeLeft();
-                CurrentBlock.DecreaseFrame(); // Rotate to previous frame
-                Sprites->DetectCollisions(&CurrentBlock);
-                if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
-                  CurrentBlock.IncreaseFrame();
               }
               else
-              {
+              { // Rotate right
                 board->rotateTetrominoeRight();
-                CurrentBlock.IncreaseFrame(); // Rotate to next frame
-                Sprites->DetectCollisions(&CurrentBlock);
-                if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
-                  CurrentBlock.DecreaseFrame();
               }
             }
           }
           
-          if ( command.left/* && (! (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MIN)) */) // Go left and check if not already on the border
-          {
+          if (command.left)
+          { // Go left and check if not already on the border
             if(millis()-lastLeftCommand >= COMMAND_REPEAT_DELAY)
             {
               lastLeftCommand = millis();
               board->moveTetrominoeLeft();
-              CurrentBlock.m_X--;
-              Sprites->DetectCollisions(&CurrentBlock);
-              if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
-                CurrentBlock.m_X++;
             }
           }
-          
-          else if ( command.right/* && (! (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MAX))*/ ) // Go right and check if not already on the border
-          {
+          else if ( command.right) 
+          { // Go right and check if not already on the border
             if(millis()-lastRightCommand >= COMMAND_REPEAT_DELAY)
             {
               lastRightCommand = millis();
               board->moveTetrominoeRight();
-              CurrentBlock.m_X++;
-              Sprites->DetectCollisions(&CurrentBlock);
-              if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
-                CurrentBlock.m_X--;
             }
           }
-          
-          if ( command.down ) // Go down
-          {
-            CurrentBlock.SetYCounter(1); // Force y increment on next cycle
+          if ( command.down ) 
+          { // Go down
             tetrominoeFallCountdown = 1; // Force drop on next cycle
           }
             
-          // Do block checks for bottom or collision
-          if (tetrominoeFallCountdown <= 1) // Current block has to go down
-          { // TODO
+          if (tetrominoeFallCountdown <= 1)
+          { // It's time for the current Tetrominoe to go down
             tetrominoeFallCountdown = DropDelay;
             if(!board->moveTetrominoeDown())
-            {
-              NextBlock = true;
+            { // Tetrominoe cannot go down => send next block
+                NextBlock = true;
             }
-            else
-            { // TODO check for game over
-
-            }
-
-/*            if (CurrentBlock.GetFlags() & SPRITE_EDGE_Y_MAX)
-              NextBlock = true; // Block as reached the bottom => send next block
-            else
-            {
-              ++CurrentBlock.m_Y; // Try going down and check for collision
-              Sprites->DetectCollisions(&CurrentBlock);
-              --CurrentBlock.m_Y;
-              if (CurrentBlock.GetFlags() & SPRITE_COLLISION)
-              {
-                // Block has collided check for game over
-                int16_t MinY = 1;
-                if ((CurrentBlock.GetCurrentFrame() % 2) == 1)
-                {
-                  if (CurrentBlock.GetXChange() == 0) // I shape vertical
-                    MinY += 2;
-                  else if (CurrentBlock.GetXChange() != 3) // Not O shape + vertical
-                    MinY += 1;
-                }
-                else if (CurrentBlock.GetXChange() == 0)  // I shape but horizontal
-                    --MinY;
-                if (CurrentBlock.m_Y >= MinY)
-                  NextBlock = true; // No game over => send next block
-                else
-                {
-                  // Game over
-                  CurrentBlock.SetYCounter(2);  // Stop last block from moving down!
-                  tetrominoeFallCountdown = 2;
-                  AttractMode = true;
-                  tetrisMusicManager->playGameOverSound();
-                  if (LastScore > HighScore)
-                  {
-                    HighScore = LastScore;
-                    sprintf((char *)GameOverMsg, "%sGAME OVER%sNEW HIGH SCORE %u%s", BlankMsg, BlankMsg, LastScore, BlankMsg);
-                  }
-                  else
-                    sprintf((char *)GameOverMsg, "%sGAME OVER%sSCORE %u%s", BlankMsg, BlankMsg, LastScore, BlankMsg);
-                  sprintf((char *)AttractMsg, "%sTETRIS%sSCORE %u%sHIGH %u%sANY BUTTON TO START%s", BlankMsg, BlankMsg, LastScore, BlankMsg, HighScore, BlankMsg, BlankMsg);
-                  //TetrisMsg.SetText(GameOverMsg, strlen((char *)GameOverMsg));
-                  //TetrisMsg.SetBackgroundMode(BACKGND_DIMMING, 0x40);
-                
-                }
-              }
-            }*/
+            // Reset fall down counter
+            tetrominoeFallCountdown = DropDelay;
           }
         }
-        if (NextBlock)  // Start new block
-        {
+        if (NextBlock)
+        { // Start new block
           if (board->hasTetrominoe()) // We have a current block so add to playfield before creating new block
-          {
+          { // Seal current Tetrominoe to the board
             board->sealTetrominoe();
-            Playfield.Combine(CurrentBlock.m_X, CurrentBlock.m_Y, &CurrentBlock);
-            Sprites->RemoveSprite(&CurrentBlock);
-            memset(CompletedLinesData, 0, sizeof(CompletedLinesData));
-            CompletedLines.m_Y = -1;
-            uint8_t *Mask = PlayfieldMask;
-            uint16_t Mbpl = (SCREEN_WIDTH + 7) / 8;
-            int16_t j, numlines = 0;
+            int numlines = 0;
             // Make completed lines highlight sprite & score
             for(int i = 0; i < BOARD_HEIGHT ; i++)
             {
               if(board->isLineComplete(i))
-              {
+              { 
                 board->highlightLine(i);
-                numlines++;
-              }
-            }
-            for (int16_t i=(SCREEN_HEIGHT-1)*Mbpl, y=0; i>=0; i-=Mbpl,++y)
-            {
-              for (j=0; j<SCREEN_WIDTH; j+=8)
-              {
-                if ((uint8_t)(0xff00 >> _min(SCREEN_WIDTH - j, 8)) != Mask[i + (j / 8)])
-                  break;
-              }
-              if (j >= SCREEN_WIDTH)
-              {
-                if (CompletedLines.m_Y == -1)
-                  CompletedLines.m_Y = y;
-                memset(&CompletedLinesData[((TETRIS_SPR_HEIGHT - 1) - (y - CompletedLines.m_Y)) * Mbpl], 0xff, Mbpl);
                 numlines++;
               }
             }
             LastScore += 1;
             if (numlines > 0)
-            {
+            { // We have completed lines
               completedLinesDisplayCounter = COMPLETED_LINE_DISPLAY_TIME;   // Set delay for highlight display to 15 loops
-              Sprites->AddSprite(&CompletedLines);
               hasCompletedLines = true;
               // Sound effect
               tetrisMusicManager->playLineSound(numlines);
@@ -738,30 +263,43 @@ void tetrisLoop(GamePad::Command command)
                 LastScore += 20;
               else if (numlines == 4)
                 LastScore += 40;
-
+              // Reduce drop delay according to new line count
               TotalLines += numlines;
               DropDelay = _max(1, INITIAL_DROP_FRAMES - (TotalLines / 5));
             }
           }
-          // Start new block
+          // Start the new block
           deal();
           Tetrominoe::Type j = getCurrentTetrominoe();
-          board->addTetrominoe(j);
-          tetrominoeFallCountdown = DropDelay;
-          CurrentBlock.Setup(TETRIS_SPR_WIDTH, TETRIS_SPR_WIDTH, TetrisSprData[j], 4, _3BIT, TetrisColours, TetrisSprMask[j]);
-          CurrentBlock.SetPositionFrameMotionOptions((SCREEN_WIDTH/2)-1, 0, 0, 0, 0, 0, +1, DropDelay, SPRITE_DETECT_COLLISION | SPRITE_DETECT_EDGE);
-          CurrentBlock.SetXChange(j);
-          Sprites->AddSprite(&CurrentBlock);
-          NextBlock = false;
+          if(board->addTetrominoe(j))
+          { // New block added, init drop delay
+            tetrominoeFallCountdown = DropDelay;
+            NextBlock = false;
+          }
+          else
+          { // New Tetrominoe could not be added => Game over
+            tetrominoeFallCountdown = 2;
+            AttractMode = true;
+            tetrisMusicManager->playGameOverSound();
+            if (LastScore > HighScore)
+            {
+              HighScore = LastScore;
+              sprintf((char *)GameOverMsg, "%sGAME OVER%sNEW HIGH SCORE %u%s", BlankMsg, BlankMsg, LastScore, BlankMsg);
+            }
+            else
+              sprintf((char *)GameOverMsg, "%sGAME OVER%sSCORE %u%s", BlankMsg, BlankMsg, LastScore, BlankMsg);
+            sprintf((char *)AttractMsg, "%sTETRIS%sSCORE %u%sHIGH %u%sANY BUTTON TO START%s", BlankMsg, BlankMsg, LastScore, BlankMsg, HighScore, BlankMsg, BlankMsg);
+            //TetrisMsg.SetText(GameOverMsg, strlen((char *)GameOverMsg));
+            //TetrisMsg.SetBackgroundMode(BACKGND_DIMMING, 0x40);
+          }
         }
-        Sprites->UpdateSprites();
+        // Update falldown counter
         tetrominoeFallCountdown--;
       }
     }
-    //Sprites->RenderSprites();
     board->render(matrix);
     // Show a hint for next Tetrominoe
-    matrix->drawPixel(7,0,TetrisColours[getNextTetrominoe()]);
+    matrix->drawPixel(7,0,TETROMINOE_COLORS[getNextTetrominoe()]);
     if (AttractMode)
     {
       /*if (TetrisMsg.UpdateText() == -1)
@@ -775,22 +313,4 @@ void tetrisLoop(GamePad::Command command)
     }
     matrix->show();
   }
-/*  if(SerialBT.available()){
-    char keyPress = (char)SerialBT.read();
-    switch(keyPress) {
-      case 'w':
-        currentInput = ROTATE;
-        break;
-      case 'a':
-        currentInput = LEFT;
-        break;
-      case 's':
-        currentInput = DOWN;
-        break;
-      case 'd':
-        currentInput = RIGHT;
-        break;
-    }
-    Serial.println(currentInput);
-  } */
 }
