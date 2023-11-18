@@ -41,9 +41,9 @@ void Board::sealTetrominoe()
     currentTetrominoe = NULL;
 }
 
-bool Board::detectCollision()
+Board::Collision Board::detectCollision()
 {
-    if(currentTetrominoe == NULL) return false;
+    if(currentTetrominoe == NULL) return Collision::NONE;
     int x,y;
     for(int i = 0 ; i < TETROMINOE_SIZE; i++)
     {
@@ -53,13 +53,55 @@ bool Board::detectCollision()
             {
                 x = currentTetrominoe->x+i;
                 // Detect border collision
-                if((x >= SCREEN_WIDTH) || (x < 0)) return true;
+                if((x >= SCREEN_WIDTH)) return Collision::BORDER_RIGHT;
+                if(x < 0) return Collision::BORDER_LEFT;
                 y = currentTetrominoe->y+j;
                 // Detect botton collision
-                if(y >= SCREEN_HEIGHT) return true;
+                if(y >= SCREEN_HEIGHT) return Collision::BOTTOM;
                 // Dettec colision with other tetrominoes
-                if(pixels[x][y] >= 0) return true;
+                if(pixels[x][y] >= 0) return Collision::PIXEL;
             }
+        }
+    }
+    return Collision::NONE;
+}
+
+bool Board::checkAndGiveSpace()
+{
+    Collision collision = detectCollision();
+    if(collision == Collision::NONE) return true;
+    if(collision == Collision::BORDER_LEFT)
+    {   // Try and give some space
+        int oldX = currentTetrominoe->x;
+        while(collision == Collision::BORDER_LEFT)
+        {   
+            currentTetrominoe->x++;
+            collision = detectCollision();
+        }
+        if(collision == Collision::NONE)
+        {
+            return true;
+        }
+        else
+        {
+            currentTetrominoe->x = oldX;
+        }
+    }
+    else if(collision == Collision::BORDER_RIGHT)
+    {   // Try and give some space
+        int oldX = currentTetrominoe->x;
+        while(collision == Collision::BORDER_RIGHT)
+        {   
+            currentTetrominoe->x--;
+            collision = detectCollision();
+        }
+        if(collision == Collision::NONE)
+        {
+            return true;
+        }
+        else
+        {
+            currentTetrominoe->x = oldX;
         }
     }
     return false;
@@ -69,30 +111,27 @@ bool Board::rotateTetrominoeLeft()
 {
     if(currentTetrominoe == NULL) return false;
     currentTetrominoe->rotateLeft();
-    if(detectCollision())
-    {
-        currentTetrominoe->rotateRight();
-        return false;
-    }
-    return true;
+    if(checkAndGiveSpace()) return true;
+    // Rotation not possible, cancel it
+    currentTetrominoe->rotateRight();
+    return false;
 }
 
 bool Board::rotateTetrominoeRight()
 {
     if(currentTetrominoe == NULL) return false;
     currentTetrominoe->rotateRight();
-    if(detectCollision())
-    {
-        currentTetrominoe->rotateLeft();
-        return false;
-    }
-    return true;
+    if(checkAndGiveSpace()) return true;
+    // Rotation not possible, cancel it
+    currentTetrominoe->rotateLeft();
+    return false;
 }
 
 bool Board::moveTetrominoeLeft()
 {
     if(currentTetrominoe == NULL) return false;
     currentTetrominoe->x--;
+    Serial.println(currentTetrominoe->x);
     if(detectCollision())
     {
         currentTetrominoe->x++;
@@ -139,7 +178,6 @@ void Board::removeHighlightedLines()
     {
         if(pixels[0][i] == Pixel::LINE)
         {   // Remove this line
-            Serial.println("Remove line !");
             for(int j = i ;  j > 0 ; j--)
             {   // Move upper lines down
                 for(int k = 0 ; k < SCREEN_WIDTH ; k++)
@@ -147,6 +185,7 @@ void Board::removeHighlightedLines()
                     pixels[k][j] = pixels[k][j-1];
                 }
             }
+            i++;
         }
     }
 }

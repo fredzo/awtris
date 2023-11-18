@@ -594,7 +594,7 @@ void tetrisLoop(GamePad::Command command)
             }
           }
           
-          if ( command.left && (! (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MIN)) ) // Go left and check if not already on the border
+          if ( command.left/* && (! (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MIN)) */) // Go left and check if not already on the border
           {
             if(millis()-lastLeftCommand >= COMMAND_REPEAT_DELAY)
             {
@@ -607,7 +607,7 @@ void tetrisLoop(GamePad::Command command)
             }
           }
           
-          else if ( command.right && (! (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MAX)) ) // Go right and check if not already on the border
+          else if ( command.right/* && (! (CurrentBlock.GetFlags() & SPRITE_EDGE_X_MAX))*/ ) // Go right and check if not already on the border
           {
             if(millis()-lastRightCommand >= COMMAND_REPEAT_DELAY)
             {
