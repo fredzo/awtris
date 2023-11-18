@@ -13,6 +13,7 @@
 #define COMPLETED_LINE_DISPLAY_TIME   15 // 15 Frames
 
 FastLED_NeoMatrix *matrix;
+TextManager* tetrisTextManager;
 MusicManager* tetrisMusicManager;
 Board* board; 
 
@@ -22,7 +23,6 @@ int tetrominoeFallCountdown = 0;
 
 unsigned char AttractMsg[144], GameOverMsg[88];
 char BlankMsg[32];
-// cLEDText TetrisMsg;
 
 uint8_t DropDelay;
 boolean AttractMode, NextBlock;
@@ -38,22 +38,17 @@ BackgroundEffect currentBackgroundEffect = NONE;
 uint8_t brightness = DEFAULT_BRIGHTNESS;
 uint8_t volume = DEFAULT_VOLUME;
 
-void tetrisInit(FastLED_NeoMatrix * ledMatrix, MusicManager * musicManager)
+void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicManager * musicManager)
 {
   matrix = ledMatrix;
   tetrisMusicManager = musicManager;
+  tetrisTextManager = textManager;
   board = new Board();
 
-  /*TetrisMsg.SetFont(MatriseFontData);
-  sprintf((char *)BlankMsg, "%.*s", _min(((leds.Height() + TetrisMsg.FontHeight()) / (TetrisMsg.FontHeight() + 1)), (int)sizeof(BlankMsg) - 1), "                              ");
-  sprintf((char *)AttractMsg, "%sTETRIS%sSCORE %u%sHIGH %u%sANY BUTTON TO START%s", BlankMsg, BlankMsg, LastScore, BlankMsg, (int)HighScore, BlankMsg, BlankMsg);
-  TetrisMsg.Init(&leds, TetrisMsg.FontWidth() + 1, leds.Height(), (leds.Width() - TetrisMsg.FontWidth()) / 2, 0);
-  TetrisMsg.SetBackgroundMode(BACKGND_LEAVE);
-  TetrisMsg.SetScrollDirection(SCROLL_UP);
-  TetrisMsg.SetTextDirection(CHAR_UP);
-  TetrisMsg.SetFrameRate(1);
-  TetrisMsg.SetOptionsChangeMode(INSTANT_OPTIONS_MODE);
-  TetrisMsg.SetText(AttractMsg, strlen((const char *)AttractMsg));*/
+  sprintf((char *)AttractMsg, "AWTRIS SCORE %u HIGH %u ANY BUTTON TO START", LastScore, (int)HighScore);
+  tetrisTextManager->showText(2,0,String((const char *)AttractMsg),TETROMINOE_COLORS[7]);
+
+
   AttractMode = true;
   LoopDelayMS = TARGET_FRAME_TIME;
   LastLoop = millis() - LoopDelayMS;
@@ -163,6 +158,7 @@ void tetrisLoop(GamePad::Command command)
         command = GamePad::NO_COMMAND;
         board->clearBoard();
         tetrisMusicManager->startMelody();
+        tetrisTextManager->hideText();
       }
     }
     else
@@ -284,13 +280,12 @@ void tetrisLoop(GamePad::Command command)
             if (LastScore > HighScore)
             {
               HighScore = LastScore;
-              sprintf((char *)GameOverMsg, "%sGAME OVER%sNEW HIGH SCORE %u%s", BlankMsg, BlankMsg, LastScore, BlankMsg);
+              sprintf((char *)GameOverMsg, "GAME OVER NEW HIGH SCORE %u",  LastScore);
             }
             else
-              sprintf((char *)GameOverMsg, "%sGAME OVER%sSCORE %u%s", BlankMsg, BlankMsg, LastScore, BlankMsg);
-            sprintf((char *)AttractMsg, "%sTETRIS%sSCORE %u%sHIGH %u%sANY BUTTON TO START%s", BlankMsg, BlankMsg, LastScore, BlankMsg, HighScore, BlankMsg, BlankMsg);
-            //TetrisMsg.SetText(GameOverMsg, strlen((char *)GameOverMsg));
-            //TetrisMsg.SetBackgroundMode(BACKGND_DIMMING, 0x40);
+              sprintf((char *)GameOverMsg, "GAME OVER SCORE %u", LastScore);
+            //sprintf((char *)AttractMsg, "%sTETRIS%sSCORE %u%sHIGH %u%sANY BUTTON TO START%s", BlankMsg, BlankMsg, LastScore, BlankMsg, HighScore, BlankMsg, BlankMsg);
+            tetrisTextManager->showText(2,0,String((const char *)GameOverMsg),TETROMINOE_COLORS[7]);
           }
         }
         // Update falldown counter
@@ -300,6 +295,7 @@ void tetrisLoop(GamePad::Command command)
     board->render(matrix);
     // Show a hint for next Tetrominoe
     matrix->drawPixel(7,0,TETROMINOE_COLORS[getNextTetrominoe()]);
+    tetrisTextManager->renderText();
     if (AttractMode)
     {
       /*if (TetrisMsg.UpdateText() == -1)

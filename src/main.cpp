@@ -13,6 +13,9 @@
 /// GamePad instance
 GamePad* gamePad;
 
+/// Text Manager instance
+TextManager* textManager;
+
 /// Music Manager instance
 MusicManager* musicManager;
 
@@ -80,7 +83,14 @@ void setup() {
   neoMatrix->setBrightness(DEFAULT_BRIGHTNESS);
   neoMatrix->setTextColor(colors[0]);
 
-  tetrisInit(neoMatrix, musicManager);
+  // TextManager init
+  textManager = TextManager::getTextManager();
+  textManager->init(neoMatrix);
+  textManager->setScrollWait(1000);
+  textManager->setScroolSpeed(96);
+
+
+  tetrisInit(neoMatrix, textManager, musicManager);
 
 
 }
