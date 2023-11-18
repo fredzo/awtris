@@ -68,7 +68,7 @@ void TextManager::matrixPrintText()
 void TextManager::showText(int x, int y, String text, CRGB color)
 {
   xPos = x;
-  yPos = y;
+  yPos = y + AwtrixFont.yAdvance;
   TextManager::text = text;
   TextManager::color = color;
   show = true;
