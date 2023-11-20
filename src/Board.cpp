@@ -233,6 +233,12 @@ bool Board::isLineComplete(int lineY)
     return true;
 }
 
+#define DIM_VALUE    128
+void Board::setDim(bool dim)
+{
+    Board::dim = dim;
+}
+
 void Board::render(FastLED_NeoMatrix * ledMatrix)
 {
     // First render tetrominoe
@@ -248,7 +254,14 @@ void Board::render(FastLED_NeoMatrix * ledMatrix)
             Pixel pixel = pixels[i][j];
             if(pixel >= 0)
             {
-                ledMatrix->drawPixel(i,j,TETROMINOE_COLORS[pixel]);
+                CRGB color = TETROMINOE_COLORS[pixel];
+                if(dim)
+                {
+                    CHSV chsvColor = rgb2hsv_approximate(color);
+                    chsvColor.v = DIM_VALUE;
+                    hsv2rgb_rainbow(chsvColor,color);
+                }
+                ledMatrix->drawPixel(i,j,color);
             }
         }
     }

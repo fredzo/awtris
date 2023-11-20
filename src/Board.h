@@ -38,12 +38,16 @@ class Board
         void removeHighlightedLines();
         bool isLineComplete(int lineY);
 
+        void setDim(bool dim);
+
         // For multiplayer
         void addPenaltyLines(int numLines);
+
 
     private :
         Pixel pixels[SCREEN_WIDTH][SCREEN_HEIGHT];
         Tetrominoe* currentTetrominoe = NULL;
+        bool dim = false;
 
         Collision detectCollision();
         bool checkAndGiveSpace();

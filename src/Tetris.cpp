@@ -46,6 +46,7 @@ void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicM
   board = new Board();
 
   sprintf((char *)AttractMsg, "AWTRIS SCORE %u HIGH %u ANY BUTTON TO START", LastScore, (int)HighScore);
+  board->setDim(true);
   tetrisTextManager->showText(2,0,String((const char *)AttractMsg),TETROMINOE_COLORS[7]);
 
 
@@ -200,6 +201,8 @@ void tetrisLoop(GamePad::Command command)
     }
     else
     { // Game started
+      // Un-dim board
+      board->setDim(false);
       if (hasCompletedLines)
       { // We have highlighted complete lines, delay for visual effect
         if (completedLinesDisplayCounter > 0)
@@ -322,6 +325,7 @@ void tetrisLoop(GamePad::Command command)
             else
               sprintf((char *)GameOverMsg, "GAME OVER SCORE %u", LastScore);
             //sprintf((char *)AttractMsg, "%sTETRIS%sSCORE %u%sHIGH %u%sANY BUTTON TO START%s", BlankMsg, BlankMsg, LastScore, BlankMsg, HighScore, BlankMsg, BlankMsg);
+            board->setDim(true);
             tetrisTextManager->showText(2,0,String((const char *)GameOverMsg),TETROMINOE_COLORS[7]);
           }
         }
