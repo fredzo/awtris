@@ -33,6 +33,8 @@ class MusicManager
 
         void playLineSound(int numlines);
 
+        void playPenaltySound(int numlines);
+
         void increaseTempo(int increment);
 
         void playGameOverSound();
@@ -50,6 +52,9 @@ class MusicManager
         Melody oneLineEffect;
         Melody twoThreeLinesEffect;
         Melody tetrisEffect;
+        Melody onePenaltyEffect;
+        Melody twoPenaltiesEffect;
+        Melody tetrisPenaltyEffect;
 
         int tempo = INITIAL_TEMPO;
 

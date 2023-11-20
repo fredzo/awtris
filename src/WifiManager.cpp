@@ -21,6 +21,8 @@ long lastStatusCheckTime = 0;
 WiFiUDP udp;
 unsigned int localUdpPort = 4445;
 
+String lastReceivedMessage = "";
+
 void rootPage()
 {
   server.send(200,"text/plain","--- Awtris ---");
@@ -217,19 +219,23 @@ bool wifiManagerHandleClient()
             int len = udp.read(incomingPacket, 255);
             if (len > 0)
             {
+                #ifdef SERIAL_OUT
+                if(lastReceivedMessage.length() > 0)
+                {
+                    Serial.print("Incoming message colligion, message lost : ");
+                    Serial.println(lastReceivedMessage);
+                }
+                #endif
                 incomingPacket[len] = 0;
+                lastReceivedMessage = String(incomingPacket);
+                #ifdef SERIAL_OUT
                 IPAddress remoteIp = udp.remoteIP();
                 if(remoteIp != WiFi.localIP())
                 {
                   Serial.print("Received packet : ");
-                  Serial.println(incomingPacket);
-                  udp.beginPacket("255.255.255.255", localUdpPort);
-                  char buf[30];
-                  unsigned long testID = millis();
-                  sprintf(buf, "ESP32 send millis: %lu", testID);
-                  udp.printf(buf);
-                  udp.endPacket();
+                  Serial.println(lastReceivedMessage);
                 }
+                #endif
             }
         }
   }
@@ -267,4 +273,29 @@ bool wifiManagerHandleClient()
 }
 
 #endif
+
+void broadcastMessage(String message)
+{
+#ifdef WIFI
+  udp.beginPacket("255.255.255.255", localUdpPort);
+  udp.printf(message.c_str());
+  udp.endPacket();
+#endif
+}
+
+String consumeMessage()
+{
+#ifdef WIFI
+  // No new message, return empty string
+  if(lastReceivedMessage.length()==0) return lastReceivedMessage;
+  // There is a new message, return it and clear message
+  String result = lastReceivedMessage;
+  lastReceivedMessage = "";
+  return result;
+#else
+  return "";
+#endif
+}
+
+
 

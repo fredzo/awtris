@@ -204,6 +204,26 @@ void Board::removeHighlightedLines()
     }
 }
 
+void Board::addPenaltyLines(int lines)
+{
+    for(int i = lines ; i < (SCREEN_HEIGHT) ; i++)
+    {   // Move each line up
+        for(int k = 0 ; k < SCREEN_WIDTH ; k++)
+        {   // Copy each pixel of the line
+            pixels[k][i-lines] = pixels[k][i];
+        }
+    }
+    // Now add peanlty lines
+    for(int i = (SCREEN_HEIGHT-lines) ; i < (SCREEN_HEIGHT) ; i++)
+    {   // Create a random hole
+        int holePosition = random(8);
+        for(int k = 0 ; k < SCREEN_WIDTH ; k++)
+        {   // Fill lune
+            pixels[k][i] = (k == holePosition) ? Pixel::OFF : Pixel::PENALTY;
+        }
+    }
+}
+
 bool Board::isLineComplete(int lineY)
 {
     for(int i=0; i < SCREEN_WIDTH ; i++)

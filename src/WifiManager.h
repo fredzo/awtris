@@ -35,4 +35,8 @@ bool wifiManagerIsConnected();
 
 #endif
 
+void broadcastMessage(String message);
+
+String consumeMessage();
+
 #endif 

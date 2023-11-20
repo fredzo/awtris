@@ -16,7 +16,8 @@ const struct CRGB TETROMINOE_COLORS[] =
     CRGB(20, 255, 20),  // S
     CRGB(255, 0, 255),  // T
     CRGB(255, 0, 0),    // Z
-    CRGB(255, 255, 255) // Comleted line
+    CRGB(255, 255, 255),// Comleted line
+    CRGB(155, 155, 155) // Penalty line
 };
 
 class Tetrominoe

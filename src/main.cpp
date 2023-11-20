@@ -132,9 +132,8 @@ void loop() {
     }
   }
 
-  tetrisLoop(command);
-
   multiPlayer->processMultiPlayer();
+  tetrisLoop(command);
 
 #ifdef WIFI
   wifiManagerHandleClient();

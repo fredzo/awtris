@@ -56,6 +56,43 @@ void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicM
   PlasmaTime = 0;
 }
 
+// Callbacks for multiplayer mode
+void inviteCallback()
+{ // TODO
+
+}
+
+void joinCallback()
+{ // TODO
+
+}
+
+void levelCallback(int level)
+{ // TODO
+
+}
+
+void addLineCallback(int numLines)
+{ // TODO : handle game state
+  // Only allow 1 (for 2 lines of other player),2 (for 3lines) or 4 lines for a Tetris
+  if((numLines == 1) || (numLines == 2) || (numLines == 4))
+  {
+    tetrisMusicManager->playPenaltySound(numLines);
+    board->addPenaltyLines(numLines);
+  } 
+}
+
+void gameOverCallback(int score)
+{
+
+}
+
+void scoreCallback(int score)
+{
+
+}
+
+
 void tetrisLoop(GamePad::Command command)
 {
   if ((millis() - LastLoop) >= LoopDelayMS)

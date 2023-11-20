@@ -14,7 +14,7 @@
 
 class Board
 {
-    enum Pixel { OFF = -1, I = 0, J, L, O, S, T, Z, LINE };
+    enum Pixel { OFF = -1, I = 0, J, L, O, S, T, Z, LINE, PENALTY };
     enum Collision { NONE =0, BORDER_LEFT, BORDER_RIGHT, BOTTOM, PIXEL };
     public :
         Board();
@@ -37,6 +37,9 @@ class Board
         void highlightLine(int lineY);
         void removeHighlightedLines();
         bool isLineComplete(int lineY);
+
+        // For multiplayer
+        void addPenaltyLines(int numLines);
 
     private :
         Pixel pixels[SCREEN_WIDTH][SCREEN_HEIGHT];

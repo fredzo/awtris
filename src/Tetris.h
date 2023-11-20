@@ -10,4 +10,12 @@
 void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicManager * musicManager);
 void tetrisLoop(GamePad::Command command);
 
+// Callbacks for multiplayer mode
+void inviteCallback();
+void joinCallback();
+void levelCallback(int level);
+void addLineCallback(int numLines);
+void gameOverCallback(int score);
+void scoreCallback(int score);
+
 #endif 

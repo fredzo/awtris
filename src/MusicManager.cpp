@@ -7,6 +7,9 @@ const char gameOverMelodyString[] = "gameover:d=4,o=4,b=200:8c5,4p,8g4,4p,4e4,6a
 const char oneLineEffectString[] = "line:d=4,o=5,b=300:32d6,32d#6,32e6,32f6,32f#6,32g6,32g#6,32a6";
 const char twoThreeLinesEffectString[] = "line:d=4,o=5,b=140:16d6,8d6,16f#6,8a6";
 const char tetrisEffectString[] = "line:d=4,o=5,b=120:16d6,8d6,16f#6,8a6,8f#6,2a6";
+const char onePenaltyEffectString[] = "line:d=4,o=5,b=300:32a6,32g#6,32g6,32f#6,32f6,32e6,32d#6,32d6";
+const char twoPenaltiesEffectString[] = "line:d=4,o=5,b=140:16a5,8a5,16f#5,8d5";
+const char tetrisPenaltyEffectString[] = "line:d=4,o=5,b=120:16a5,8a5,16f#5,8d5,8f#5,2d5";
 
 
 void MusicManager::init()
@@ -16,6 +19,9 @@ void MusicManager::init()
   oneLineEffect = MelodyFactory.loadRtttlString(oneLineEffectString);
   twoThreeLinesEffect = MelodyFactory.loadRtttlString(twoThreeLinesEffectString);
   tetrisEffect = MelodyFactory.loadRtttlString(tetrisEffectString);
+  onePenaltyEffect = MelodyFactory.loadRtttlString(onePenaltyEffectString);
+  twoPenaltiesEffect = MelodyFactory.loadRtttlString(twoPenaltiesEffectString);
+  tetrisPenaltyEffect = MelodyFactory.loadRtttlString(tetrisPenaltyEffectString);
   player->setVolume(DEFAULT_VOLUME);
   effectPlayer->setVolume(DEFAULT_VOLUME);
 }
@@ -61,6 +67,26 @@ void MusicManager::playLineSound(int numLines)
       break;
     default :
       effectPlayer->playAsync(oneLineEffect,false,stopMelodyCallback);
+  }
+}
+
+void MusicManager::playPenaltySound(int numLines)
+{
+  player->mute();
+  switch(numLines)
+  {
+    case 1 :
+      effectPlayer->playAsync(onePenaltyEffect,false,stopMelodyCallback);
+      break;
+    case 2 :
+      effectPlayer->playAsync(twoPenaltiesEffect,false,stopMelodyCallback);
+      break;
+    case 4 :
+      effectPlayer->playAsync(tetrisPenaltyEffect,false,stopMelodyCallback);
+      break;
+    default :
+      // Ignore other values
+      break;
   }
 }
 
