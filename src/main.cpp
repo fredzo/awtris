@@ -8,7 +8,7 @@
 #include <MusicManager.h>
 #include <WifiManager.h>
 #include <MultiPlayer.h>
-
+#include <Settings.h>
 
 /// GamePad instance
 GamePad* gamePad;
@@ -21,6 +21,9 @@ MusicManager* musicManager;
 
 /// MultiPlayer instance
 MultiPlayer* multiPlayer;
+
+/// Settings
+Settings * settings;
 
 /// Neo Matrix
 #define NUMMATRIX (MATRIX_WIDTH*MATRIX_HEIGHT)
@@ -89,8 +92,12 @@ void setup() {
   textManager->setScrollWait(1000);
   textManager->setScroolSpeed(96);
 
+  // Settings init
+  settings = Settings::getSettings();
+  settings->init();
 
-  tetrisInit(neoMatrix, textManager, musicManager);
+
+  tetrisInit(neoMatrix, textManager, musicManager, settings);
 
 
 }

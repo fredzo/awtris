@@ -6,8 +6,9 @@
 #include <TextManager.h>
 #include <GamePad.h>
 #include <MusicManager.h>
+#include <Settings.h>
 
-void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicManager * musicManager);
+void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicManager * musicManager, Settings * settings);
 void tetrisLoop(GamePad::Command command);
 
 // Callbacks for multiplayer mode

@@ -16,6 +16,7 @@ FastLED_NeoMatrix *matrix;
 TextManager* tetrisTextManager;
 MusicManager* tetrisMusicManager;
 Board* board; 
+Settings * tetrisSettings;
 
 int completedLinesDisplayCounter = 0;
 bool hasCompletedLines = false;
@@ -27,7 +28,7 @@ char BlankMsg[32];
 uint8_t DropDelay;
 boolean AttractMode, NextBlock;
 int16_t TotalLines;
-unsigned int HighScore = 0, LastScore;
+int HighScore = 0, LastScore;
 
 uint16_t PlasmaTime, PlasmaShift;
 unsigned long LoopDelayMS, LastLoop, lastRotateCommand, lastLeftCommand, lastRightCommand, lastPlusMinusCommand;
@@ -38,14 +39,17 @@ BackgroundEffect currentBackgroundEffect = NONE;
 uint8_t brightness = DEFAULT_BRIGHTNESS;
 uint8_t volume = DEFAULT_VOLUME;
 
-void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicManager * musicManager)
+void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicManager * musicManager, Settings * settings)
 {
   matrix = ledMatrix;
   tetrisMusicManager = musicManager;
   tetrisTextManager = textManager;
+  tetrisSettings = settings;
   board = new Board();
+  // Restore high score
+  HighScore = tetrisSettings->getHighScore();
 
-  sprintf((char *)AttractMsg, "AWTRIS SCORE %u HIGH %u ANY BUTTON TO START", LastScore, (int)HighScore);
+  sprintf((char *)AttractMsg, "AWTRIS SCORE %u HIGH %u ANY BUTTON TO START", LastScore, HighScore);
   board->setDim(true);
   tetrisTextManager->showText(2,0,String((const char *)AttractMsg),TETROMINOE_COLORS[7]);
 
@@ -320,6 +324,8 @@ void tetrisLoop(GamePad::Command command)
             if (LastScore > HighScore)
             {
               HighScore = LastScore;
+              tetrisSettings->setHighScore(HighScore);
+              tetrisSettings->save();
               sprintf((char *)GameOverMsg, "GAME OVER NEW HIGH SCORE %u",  LastScore);
             }
             else
