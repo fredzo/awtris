@@ -22,16 +22,16 @@ int completedLinesDisplayCounter = 0;
 bool hasCompletedLines = false;
 int tetrominoeFallCountdown = 0;
 
-unsigned char AttractMsg[144], GameOverMsg[88];
-char BlankMsg[32];
+unsigned char waitStartMessage[256], gameOverMessage[128];
 
-uint8_t DropDelay;
-boolean AttractMode, NextBlock;
-int16_t TotalLines;
-int HighScore = 0, LastScore;
+byte dropDelay;
+bool AttractMode;
+bool nextBlock;
+int totalLines;
+int highScore = 0, lastScore;
 
-uint16_t PlasmaTime, PlasmaShift;
-unsigned long LoopDelayMS, LastLoop, lastRotateCommand, lastLeftCommand, lastRightCommand, lastPlusMinusCommand;
+uint16_t plasmaTime, plasmaShift;
+unsigned long loopDelayMS, lastLoop, lastRotateCommand, lastLeftCommand, lastRightCommand, lastPlusMinusCommand;
 
 enum BackgroundEffect { NONE = 0, PLASMA = 1 };
 BackgroundEffect currentBackgroundEffect = NONE;
@@ -47,18 +47,18 @@ void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicM
   tetrisSettings = settings;
   board = new Board();
   // Restore high score
-  HighScore = tetrisSettings->getHighScore();
+  highScore = tetrisSettings->getHighScore();
 
-  sprintf((char *)AttractMsg, "AWTRIS SCORE %u HIGH %u ANY BUTTON TO START", LastScore, HighScore);
+  sprintf((char *)waitStartMessage, "AWTRIS SCORE %u HIGH %u - PRESS ANY BUTTON TO START", lastScore, highScore);
   board->setDim(true);
-  tetrisTextManager->showText(2,0,String((const char *)AttractMsg),TETROMINOE_COLORS[7]);
+  tetrisTextManager->showText(2,0,String((const char *)waitStartMessage),TETROMINOE_COLORS[7]);
 
 
   AttractMode = true;
-  LoopDelayMS = TARGET_FRAME_TIME;
-  LastLoop = millis() - LoopDelayMS;
-  PlasmaShift = (random8(0, 5) * 32) + 64;
-  PlasmaTime = 0;
+  loopDelayMS = TARGET_FRAME_TIME;
+  lastLoop = millis() - loopDelayMS;
+  plasmaShift = (random8(0, 5) * 32) + 64;
+  plasmaTime = 0;
 }
 
 // Callbacks for multiplayer mode
@@ -100,12 +100,12 @@ void scoreCallback(int score)
 
 void tetrisLoop(GamePad::Command command)
 {
-  if ((millis() - LastLoop) >= LoopDelayMS)
+  if ((millis() - lastLoop) >= loopDelayMS)
   {
-    LastLoop = millis();
+    lastLoop = millis();
     matrix->clear();
     
-    if ( (command.plus || command.minus))
+    if((command.plus || command.minus))
     {
       if(command.menu)
       { // Brightness change
@@ -177,15 +177,15 @@ void tetrisLoop(GamePad::Command command)
       {
         for (int16_t y=0; y<SCREEN_HEIGHT; y++)
         {
-          int16_t r = sin16(PlasmaTime) / 256;
-          int16_t h = sin16(x * r * PLASMA_X_FACTOR + PlasmaTime) + cos16(y * (-r) * PLASMA_Y_FACTOR + PlasmaTime) + sin16(y * x * (cos16(-PlasmaTime) / 256) / 2);
+          int16_t r = sin16(plasmaTime) / 256;
+          int16_t h = sin16(x * r * PLASMA_X_FACTOR + plasmaTime) + cos16(y * (-r) * PLASMA_Y_FACTOR + plasmaTime) + sin16(y * x * (cos16(-plasmaTime) / 256) / 2);
           matrix->drawPixel(x, y,CHSV((uint8_t)((h / 256) + 128), 255, 64));
         }
       }
-      uint16_t OldPlasmaTime = PlasmaTime;
-      PlasmaTime += PlasmaShift;
-      if (OldPlasmaTime > PlasmaTime)
-        PlasmaShift = (random8(0, 5) * 32) + 64;
+      uint16_t OldPlasmaTime = plasmaTime;
+      plasmaTime += plasmaShift;
+      if (OldPlasmaTime > plasmaTime)
+        plasmaShift = (random8(0, 5) * 32) + 64;
     }
 
     if (AttractMode)
@@ -193,10 +193,10 @@ void tetrisLoop(GamePad::Command command)
       if (command.hasCommand())
       { // Start new game !
         AttractMode = false;
-        LastScore = 0;
-        TotalLines = 0;
-        DropDelay = INITIAL_DROP_FRAMES;
-        NextBlock = true;
+        lastScore = 0;
+        totalLines = 0;
+        dropDelay = INITIAL_DROP_FRAMES;
+        nextBlock = true;
         command = GamePad::NO_COMMAND;
         board->clearBoard();
         tetrisMusicManager->startMelody();
@@ -262,16 +262,16 @@ void tetrisLoop(GamePad::Command command)
             
           if (tetrominoeFallCountdown <= 1)
           { // It's time for the current Tetrominoe to go down
-            tetrominoeFallCountdown = DropDelay;
+            tetrominoeFallCountdown = dropDelay;
             if(!board->moveTetrominoeDown())
             { // Tetrominoe cannot go down => send next block
-                NextBlock = true;
+                nextBlock = true;
             }
             // Reset fall down counter
-            tetrominoeFallCountdown = DropDelay;
+            tetrominoeFallCountdown = dropDelay;
           }
         }
-        if (NextBlock)
+        if (nextBlock)
         { // Start new block
           if (board->hasTetrominoe()) // We have a current block so add to playfield before creating new block
           { // Seal current Tetrominoe to the board
@@ -286,7 +286,7 @@ void tetrisLoop(GamePad::Command command)
                 numlines++;
               }
             }
-            LastScore += 1;
+            lastScore += 1;
             if (numlines > 0)
             { // We have completed lines
               completedLinesDisplayCounter = COMPLETED_LINE_DISPLAY_TIME;   // Set delay for highlight display to 15 loops
@@ -296,16 +296,16 @@ void tetrisLoop(GamePad::Command command)
               // Update tempo
               tetrisMusicManager->increaseTempo(numlines);
               if (numlines == 1)
-                LastScore += 4;
+                lastScore += 4;
               else if (numlines == 2)
-                LastScore += 12;
+                lastScore += 12;
               else if (numlines == 3)
-                LastScore += 20;
+                lastScore += 20;
               else if (numlines == 4)
-                LastScore += 40;
+                lastScore += 40;
               // Reduce drop delay according to new line count
-              TotalLines += numlines;
-              DropDelay = _max(1, INITIAL_DROP_FRAMES - (TotalLines / 5));
+              totalLines += numlines;
+              dropDelay = _max(1, INITIAL_DROP_FRAMES - (totalLines / 5));
             }
           }
           // Start the new block
@@ -313,26 +313,26 @@ void tetrisLoop(GamePad::Command command)
           Tetrominoe::Type j = getCurrentTetrominoe();
           if(board->addTetrominoe(j))
           { // New block added, init drop delay
-            tetrominoeFallCountdown = DropDelay;
-            NextBlock = false;
+            tetrominoeFallCountdown = dropDelay;
+            nextBlock = false;
           }
           else
           { // New Tetrominoe could not be added => Game over
             tetrominoeFallCountdown = 2;
             AttractMode = true;
             tetrisMusicManager->playGameOverSound();
-            if (LastScore > HighScore)
+            if (lastScore > highScore)
             {
-              HighScore = LastScore;
-              tetrisSettings->setHighScore(HighScore);
+              highScore = lastScore;
+              tetrisSettings->setHighScore(highScore);
               tetrisSettings->save();
-              sprintf((char *)GameOverMsg, "GAME OVER NEW HIGH SCORE %u",  LastScore);
+              sprintf((char *)gameOverMessage, "GAME OVER NEW HIGH SCORE %u",  lastScore);
             }
             else
-              sprintf((char *)GameOverMsg, "GAME OVER SCORE %u", LastScore);
-            //sprintf((char *)AttractMsg, "%sTETRIS%sSCORE %u%sHIGH %u%sANY BUTTON TO START%s", BlankMsg, BlankMsg, LastScore, BlankMsg, HighScore, BlankMsg, BlankMsg);
+              sprintf((char *)gameOverMessage, "GAME OVER SCORE %u", lastScore);
+            //sprintf((char *)waitStartMessage, "%sTETRIS%sSCORE %u%sHIGH %u%sANY BUTTON TO START%s", BlankMsg, BlankMsg, lastScore, BlankMsg, highScore, BlankMsg, BlankMsg);
             board->setDim(true);
-            tetrisTextManager->showText(2,0,String((const char *)GameOverMsg),TETROMINOE_COLORS[7]);
+            tetrisTextManager->showText(2,0,String((const char *)gameOverMessage),TETROMINOE_COLORS[7]);
           }
         }
         // Update falldown counter
@@ -347,7 +347,7 @@ void tetrisLoop(GamePad::Command command)
     {
       /*if (TetrisMsg.UpdateText() == -1)
       {
-        TetrisMsg.SetText(AttractMsg, strlen((char *)AttractMsg));
+        TetrisMsg.SetText(waitStartMessage, strlen((char *)waitStartMessage));
         TetrisMsg.SetBackgroundMode(BACKGND_LEAVE);
         Sprites->RemoveSprite(&CurrentBlock);
         memset(PlayfieldData, 0, sizeof(PlayfieldData));
