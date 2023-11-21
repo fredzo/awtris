@@ -6,11 +6,13 @@
 #include <RandomGenerator.h>
 #include <Board.h>
 
-#define TARGET_FRAME_TIME    15  // Desired update rate, though if too many leds it will just run as fast as it can!
-#define INITIAL_DROP_FRAMES  20  // Start of game block drop delay in frames
+#define TARGET_FRAME_TIME     15  // Desired update rate, though if too many leds it will just run as fast as it can!
+#define INITIAL_DROP_FRAMES   20  // Start of game block drop delay in frames
 #define COMMAND_REPEAT_DELAY  150
 
 #define COMPLETED_LINE_DISPLAY_TIME   15 // 15 Frames
+
+#define GAME_OVER_WAIT_TIME   5000  // Wait for 5 sec before starting an new game
 
 FastLED_NeoMatrix *matrix;
 TextManager* tetrisTextManager;
@@ -31,7 +33,7 @@ int totalLines;
 int highScore = 0, lastScore;
 
 uint16_t plasmaTime, plasmaShift;
-unsigned long loopDelayMS, lastLoop, lastRotateCommand, lastLeftCommand, lastRightCommand, lastPlusMinusCommand;
+unsigned long loopDelayMS, lastLoop, lastRotateCommand, lastLeftCommand, lastRightCommand, lastPlusMinusCommand, gameOverTime;
 
 enum BackgroundEffect { NONE = 0, PLASMA = 1 };
 BackgroundEffect currentBackgroundEffect = NONE;
@@ -189,8 +191,8 @@ void tetrisLoop(GamePad::Command command)
     }
 
     if (AttractMode)
-    { // Waiting for the player
-      if (command.hasCommand())
+    { // Waiting for the player (+ prevent from starting a new game to soon after game over)
+      if((millis() > (gameOverTime + GAME_OVER_WAIT_TIME)) && command.hasCommand())
       { // Start new game !
         AttractMode = false;
         lastScore = 0;
@@ -333,6 +335,7 @@ void tetrisLoop(GamePad::Command command)
             //sprintf((char *)waitStartMessage, "%sTETRIS%sSCORE %u%sHIGH %u%sANY BUTTON TO START%s", BlankMsg, BlankMsg, lastScore, BlankMsg, highScore, BlankMsg, BlankMsg);
             board->setDim(true);
             tetrisTextManager->showText(2,0,String((const char *)gameOverMessage),TETROMINOE_COLORS[7]);
+            gameOverTime = millis();
           }
         }
         // Update falldown counter
