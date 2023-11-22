@@ -73,6 +73,7 @@ void TextManager::showText(int x, int y, String text, CRGB color)
   TextManager::color = color;
   show = true;
   scrollCountDown = 0xFF;
+  scrollPosition = 0;
   textPixels = text.length() * AwtrixFont.yAdvance;
   scrollWaitStart = millis();
 }
