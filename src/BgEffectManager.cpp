@@ -49,7 +49,7 @@ void BgEffectManager::render(FastLED_NeoMatrix * ledMatrix)
             {
                 for (int16_t y=0; y<SCREEN_HEIGHT; y++)
                 { 
-                    ledMatrix->drawPixel(x, y, CHSV(60, 60, 40));
+                    ledMatrix->drawPixel(x, y, CHSV(60, 60, 44));
                 }
             }
             break;
@@ -59,7 +59,7 @@ void BgEffectManager::render(FastLED_NeoMatrix * ledMatrix)
             {
                 for (int16_t y=0; y<SCREEN_HEIGHT; y++)
                 {   // Alternate color on each column
-                    ledMatrix->drawPixel(x, y, ( (x%2) ? CHSV(60, 60, 40) : CHSV(0, 0, 64)));
+                    ledMatrix->drawPixel(x, y, ( (x%2) ? CHSV(60, 60, 44) : CHSV(0, 0, 64)));
                 }
             }
             break;
