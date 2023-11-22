@@ -8,7 +8,7 @@
 class BgEffectManager
 {
     public :
-        enum BackgroundEffect { NONE = 0, SWIMLANES, CHESSBOARD, STRIPES, PLASMA };
+        enum BackgroundEffect { NONE = 0, PLAIN, SWIMLANES, CHESSBOARD, STRIPES, WAVES, PLASMA };
         BgEffectManager();
 
         void setBackgroundEffect(BackgroundEffect effect);

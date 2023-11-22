@@ -42,16 +42,23 @@ void BgEffectManager::render(FastLED_NeoMatrix * ledMatrix)
     uint16_t OldPlasmaTime;
     switch(currentBackgroundEffect)
     {
+        case PLAIN :
+            // Fill background with plain color
+            for (int16_t x=0; x<SCREEN_WIDTH; x++)
+            {
+                for (int16_t y=0; y<SCREEN_HEIGHT; y++)
+                { 
+                    ledMatrix->drawPixel(x, y, CHSV(60, 60, 32));
+                }
+            }
+            break;
         case SWIMLANES :
             // Fill background with dim stripes
             for (int16_t x=0; x<SCREEN_WIDTH; x++)
             {
                 for (int16_t y=0; y<SCREEN_HEIGHT; y++)
-                {   
-                    if(x%2)
-                    {   // Dim white on row out of two
-                        ledMatrix->drawPixel(x, y,CHSV(0, 0, 64));
-                    }
+                {   // Alternate color on each column
+                    ledMatrix->drawPixel(x, y, ( (x%2) ? CHSV(60, 60, 32) : CHSV(0, 0, 64)));
                 }
             }
             break;
@@ -61,9 +68,13 @@ void BgEffectManager::render(FastLED_NeoMatrix * ledMatrix)
             {
                 for (int16_t y=0; y<SCREEN_HEIGHT; y++)
                 {   
-                    if((x%2 && y%2) || (!x%2 && !y%2))
+                    if(((x%2) && (y%2)) || (!(x%2) && !(y%2)))
                     {  // Chessboard
                        ledMatrix->drawPixel(x, y,CHSV(0, 0, 64));
+                    }
+                    else
+                    {
+                       ledMatrix->drawPixel(x, y,CHSV(0, 0, 32));
                     }
                 }
             }
@@ -74,8 +85,27 @@ void BgEffectManager::render(FastLED_NeoMatrix * ledMatrix)
             {
                 for (int16_t y=0; y<SCREEN_HEIGHT; y++)
                 {
-                int16_t r = sin16(plasmaTime+(x*0xF1FFF)) / 256;
-                ledMatrix->drawPixel(x, y,CHSV((uint8_t)((r / 256) + 128), 255, 64));
+/*                    byte r = ((sin16(plasmaTime+y+(x*0x1FFF)) >> 8)+128);
+                    ledMatrix->drawPixel(x, y,CHSV(r, 255, 64));*/
+                    int16_t r = sin16(plasmaTime) / 256;
+                    int16_t h = x*0x1FFF + cos16(y * PLASMA_Y_FACTOR + plasmaTime)/*+ sin16(y * (cos16(-plasmaTime) / 256) / 2)*/;
+                    ledMatrix->drawPixel(x, y,CHSV((uint8_t)((h / 256) + 128), 255, 64));
+                }
+            }
+            OldPlasmaTime = plasmaTime;
+            plasmaTime += plasmaShift;
+            if (OldPlasmaTime > plasmaTime)
+                plasmaShift = (random8(0, 5) * 32) + 64;
+            break;
+        case WAVES :
+            // Fill background with dim waves
+            for (int16_t x=0; x<SCREEN_WIDTH; x++)
+            {
+                for (int16_t y=0; y<SCREEN_HEIGHT; y++)
+                {
+                    int16_t r = sin16(plasmaTime) / 256;
+                    int16_t h = x*0x1FFF + sin16(r * PLASMA_X_FACTOR + plasmaTime) + cos16(y * (-r) * PLASMA_Y_FACTOR + plasmaTime) + sin16(y * (cos16(-plasmaTime) / 256) / 2);
+                    ledMatrix->drawPixel(x, y,CHSV((uint8_t)((h / 256) + 128), 255, 64));
                 }
             }
             OldPlasmaTime = plasmaTime;

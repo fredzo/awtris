@@ -40,7 +40,7 @@ void TextManager::matrixPrint(char c)
         Serial.println(cursor_y + yo + yy);*/
         x = currentX + xo + xx;
         y = currentY + yo + yy;
-        if(x>=0 && y>=0 && x < SCREEN_WIDTH && y < SCREEN_HEIGHT)
+        if(x>=0 && y>=0 && x < SCREEN_WIDTH && y <= SCREEN_HEIGHT)
         {
           matrix->drawPixel(x, y, color);
         }
@@ -56,7 +56,7 @@ void TextManager::matrixPrintText()
   while (*str)
   {
     char c = *str++;
-    if (c >= AwtrixFont.first && c <= AwtrixFont.last && currentY < SCREEN_HEIGHT)
+    if (c >= AwtrixFont.first && c <= AwtrixFont.last && currentY <= SCREEN_HEIGHT)
     {
       GFXglyph *glyph = &AwtrixFont.glyph[c - AwtrixFont.first];
       matrixPrint(c);
