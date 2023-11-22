@@ -37,6 +37,7 @@ void BgEffectManager::previousEffect()
 
 #define PLASMA_X_FACTOR  24
 #define PLASMA_Y_FACTOR  24
+#define STRIPES_Y_FACTOR 64
 void BgEffectManager::render(FastLED_NeoMatrix * ledMatrix)
 {
     uint16_t OldPlasmaTime;
@@ -48,7 +49,7 @@ void BgEffectManager::render(FastLED_NeoMatrix * ledMatrix)
             {
                 for (int16_t y=0; y<SCREEN_HEIGHT; y++)
                 { 
-                    ledMatrix->drawPixel(x, y, CHSV(60, 60, 32));
+                    ledMatrix->drawPixel(x, y, CHSV(60, 60, 40));
                 }
             }
             break;
@@ -58,7 +59,7 @@ void BgEffectManager::render(FastLED_NeoMatrix * ledMatrix)
             {
                 for (int16_t y=0; y<SCREEN_HEIGHT; y++)
                 {   // Alternate color on each column
-                    ledMatrix->drawPixel(x, y, ( (x%2) ? CHSV(60, 60, 32) : CHSV(0, 0, 64)));
+                    ledMatrix->drawPixel(x, y, ( (x%2) ? CHSV(60, 60, 40) : CHSV(0, 0, 64)));
                 }
             }
             break;
@@ -85,10 +86,8 @@ void BgEffectManager::render(FastLED_NeoMatrix * ledMatrix)
             {
                 for (int16_t y=0; y<SCREEN_HEIGHT; y++)
                 {
-/*                    byte r = ((sin16(plasmaTime+y+(x*0x1FFF)) >> 8)+128);
-                    ledMatrix->drawPixel(x, y,CHSV(r, 255, 64));*/
                     int16_t r = sin16(plasmaTime) / 256;
-                    int16_t h = x*0x1FFF + cos16(y * PLASMA_Y_FACTOR + plasmaTime)/*+ sin16(y * (cos16(-plasmaTime) / 256) / 2)*/;
+                    int16_t h = x*0x1FFF + cos16(y * STRIPES_Y_FACTOR + plasmaTime);
                     ledMatrix->drawPixel(x, y,CHSV((uint8_t)((h / 256) + 128), 255, 64));
                 }
             }
