@@ -5,6 +5,7 @@
 #include <FastLED_NeoMatrix.h>
 #include <RandomGenerator.h>
 #include <Board.h>
+#include <BgEffectManager.h>
 
 #define TARGET_FRAME_TIME     15  // Desired update rate, though if too many leds it will just run as fast as it can!
 #define INITIAL_DROP_FRAMES   20  // Start of game block drop delay in frames
@@ -17,8 +18,9 @@
 FastLED_NeoMatrix *matrix;
 TextManager* tetrisTextManager;
 MusicManager* tetrisMusicManager;
-Board* board; 
 Settings * tetrisSettings;
+Board* board; 
+BgEffectManager* bgEffectManager;
 
 int completedLinesDisplayCounter = 0;
 bool hasCompletedLines = false;
@@ -32,14 +34,10 @@ bool nextBlock;
 int totalLines;
 int highScore = 0, lastScore;
 
-uint16_t plasmaTime, plasmaShift;
 unsigned long loopDelayMS, lastLoop, lastRotateCommand, lastLeftCommand, lastRightCommand, lastPlusMinusCommand, gameOverTime;
 
-enum BackgroundEffect { NONE = 0, PLASMA = 1 };
-BackgroundEffect currentBackgroundEffect = NONE;
-
-uint8_t brightness = DEFAULT_BRIGHTNESS;
-uint8_t volume = DEFAULT_VOLUME;
+uint8_t brightness;
+uint8_t volume;
 
 void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicManager * musicManager, Settings * settings)
 {
@@ -48,8 +46,12 @@ void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicM
   tetrisTextManager = textManager;
   tetrisSettings = settings;
   board = new Board();
-  // Restore high score
+  bgEffectManager = new BgEffectManager();
+  // Restore settings
+  brightness = tetrisSettings->getBrightness();
+  volume = tetrisSettings->getVolume();
   highScore = tetrisSettings->getHighScore();
+  bgEffectManager->setBackgroundEffect(tetrisSettings->getBackgroundEffect());
 
   sprintf((char *)waitStartMessage, "AWTRIS SCORE %u HIGH %u - PRESS ANY BUTTON TO START", lastScore, highScore);
   board->setDim(true);
@@ -59,8 +61,6 @@ void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicM
   AttractMode = true;
   loopDelayMS = TARGET_FRAME_TIME;
   lastLoop = millis() - loopDelayMS;
-  plasmaShift = (random8(0, 5) * 32) + 64;
-  plasmaTime = 0;
 }
 
 // Callbacks for multiplayer mode
@@ -126,6 +126,7 @@ void tetrisLoop(GamePad::Command command)
           }
         }
         matrix->setBrightness(brightness);
+        tetrisSettings->setBrigtness(brightness);
       }
       else if(command.trig)
       { // Volume change
@@ -144,6 +145,7 @@ void tetrisLoop(GamePad::Command command)
           }
         }
         tetrisMusicManager->setVolume(volume);
+        tetrisSettings->setVolume(volume);
       }
       else
       { // Background change
@@ -152,43 +154,19 @@ void tetrisLoop(GamePad::Command command)
           lastPlusMinusCommand = millis();
           if(command.plus)
           {
-            currentBackgroundEffect = (BackgroundEffect)(currentBackgroundEffect + 1);
-            if(currentBackgroundEffect > PLASMA)
-            {
-              currentBackgroundEffect = NONE;
-            }
+            bgEffectManager->nextEffect();
           }
           else
           {
-            currentBackgroundEffect = (BackgroundEffect)(currentBackgroundEffect - 1);
-            if(currentBackgroundEffect < NONE)
-            {
-              currentBackgroundEffect = PLASMA;
-            }
+            bgEffectManager->previousEffect();
           }
+          tetrisSettings->setBackgroundEffect(bgEffectManager->getBackgroundEffect());
         }
       }
     }
 
-    if(currentBackgroundEffect == PLASMA)
-    {
-      // Fill background with dim plasma
-      #define PLASMA_X_FACTOR  24
-      #define PLASMA_Y_FACTOR  24
-      for (int16_t x=0; x<SCREEN_WIDTH; x++)
-      {
-        for (int16_t y=0; y<SCREEN_HEIGHT; y++)
-        {
-          int16_t r = sin16(plasmaTime) / 256;
-          int16_t h = sin16(x * r * PLASMA_X_FACTOR + plasmaTime) + cos16(y * (-r) * PLASMA_Y_FACTOR + plasmaTime) + sin16(y * x * (cos16(-plasmaTime) / 256) / 2);
-          matrix->drawPixel(x, y,CHSV((uint8_t)((h / 256) + 128), 255, 64));
-        }
-      }
-      uint16_t OldPlasmaTime = plasmaTime;
-      plasmaTime += plasmaShift;
-      if (OldPlasmaTime > plasmaTime)
-        plasmaShift = (random8(0, 5) * 32) + 64;
-    }
+    // Render background effect
+    bgEffectManager->render(matrix);
 
     if (AttractMode)
     { // Waiting for the player (+ prevent from starting a new game to soon after game over)
@@ -327,7 +305,6 @@ void tetrisLoop(GamePad::Command command)
             {
               highScore = lastScore;
               tetrisSettings->setHighScore(highScore);
-              tetrisSettings->save();
               sprintf((char *)gameOverMessage, "GAME OVER NEW HIGH SCORE %u",  lastScore);
             }
             else

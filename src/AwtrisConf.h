@@ -19,7 +19,7 @@
 // Default birghtness for LedMatrix
 #define DEFAULT_BRIGHTNESS  40
 // Default volume for melody
-#define DEFAULT_VOLUME      80
+#define DEFAULT_VOLUME      60
 
 
 // Uncomment to enable logs on serial out

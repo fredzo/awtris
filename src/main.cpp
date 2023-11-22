@@ -73,9 +73,14 @@ void setup() {
   gamePad = new GamePad();
   gamePad->init();
 
+  // Settings init
+  settings = Settings::getSettings();
+  settings->init();
+
   // MusicManager init
   musicManager = MusicManager::getMusicManager();
   musicManager->init();
+  musicManager->setVolume(settings->getVolume());
 
   // Set leds for matrix to NEOPIXEL type with corresponding pin
   FastLED.addLeds<NEOPIXEL, MATRIX_PIN>(matrixleds, MATRIX_WIDTH * MATRIX_HEIGHT);
@@ -83,7 +88,7 @@ void setup() {
   // Rotate screen in vertical position for Tetris-style display
   neoMatrix->setRotation(1);
   neoMatrix->setTextWrap(false);
-  neoMatrix->setBrightness(DEFAULT_BRIGHTNESS);
+  neoMatrix->setBrightness(settings->getBrightness());
   neoMatrix->setTextColor(colors[0]);
 
   // TextManager init
@@ -91,10 +96,6 @@ void setup() {
   textManager->init(neoMatrix);
   textManager->setScrollWait(1000);
   textManager->setScroolSpeed(96);
-
-  // Settings init
-  settings = Settings::getSettings();
-  settings->init();
 
 
   tetrisInit(neoMatrix, textManager, musicManager, settings);
@@ -146,6 +147,8 @@ void loop() {
   wifiManagerHandleClient();
 #endif
 
+  // Handle setting autosave
+  settings->processAutoSave();
 
   // Set the last-read button state to the old state.
   oldButtonState = newButtonState;

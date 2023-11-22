@@ -22,8 +22,6 @@ void MusicManager::init()
   onePenaltyEffect = MelodyFactory.loadRtttlString(onePenaltyEffectString);
   twoPenaltiesEffect = MelodyFactory.loadRtttlString(twoPenaltiesEffectString);
   tetrisPenaltyEffect = MelodyFactory.loadRtttlString(tetrisPenaltyEffectString);
-  player->setVolume(DEFAULT_VOLUME);
-  effectPlayer->setVolume(DEFAULT_VOLUME);
 }
 
 void MusicManager::setVolume(byte volume)
