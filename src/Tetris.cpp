@@ -29,7 +29,8 @@ int tetrominoeFallCountdown = 0;
 unsigned char waitStartMessage[256], gameOverMessage[128];
 
 byte dropDelay;
-bool AttractMode;
+enum  GameState { WAIT_START = 0, PLAYING_SINGLE, WAIT_JOIN, ASK_JOIN, PLAYING_MULTI, GAME_OVER };
+GameState gameState = WAIT_START;
 bool nextBlock;
 int totalLines;
 int highScore = 0, lastScore;
@@ -57,8 +58,7 @@ void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicM
   board->setDim(true);
   tetrisTextManager->showText(2,0,String((const char *)waitStartMessage),TETROMINOE_COLORS[7]);
 
-
-  AttractMode = true;
+  gameState = WAIT_START;
   loopDelayMS = TARGET_FRAME_TIME;
   lastLoop = millis() - loopDelayMS;
 }
@@ -168,11 +168,11 @@ void tetrisLoop(GamePad::Command command)
     // Render background effect
     bgEffectManager->render(matrix);
 
-    if (AttractMode)
+    if (gameState == WAIT_START || gameState == GAME_OVER)
     { // Waiting for the player (+ prevent from starting a new game to soon after game over)
       if((millis() > (gameOverTime + GAME_OVER_WAIT_TIME)) && command.hasCommand())
       { // Start new game !
-        AttractMode = false;
+        gameState = PLAYING_SINGLE;
         lastScore = 0;
         totalLines = 0;
         dropDelay = INITIAL_DROP_FRAMES;
@@ -299,7 +299,7 @@ void tetrisLoop(GamePad::Command command)
           else
           { // New Tetrominoe could not be added => Game over
             tetrominoeFallCountdown = 2;
-            AttractMode = true;
+            gameState = GAME_OVER;
             tetrisMusicManager->playGameOverSound();
             if (lastScore > highScore)
             {
@@ -323,17 +323,6 @@ void tetrisLoop(GamePad::Command command)
     // Show a hint for next Tetrominoe
     matrix->drawPixel(7,0,TETROMINOE_COLORS[getNextTetrominoe()]);
     tetrisTextManager->renderText();
-    if (AttractMode)
-    {
-      /*if (TetrisMsg.UpdateText() == -1)
-      {
-        TetrisMsg.SetText(waitStartMessage, strlen((char *)waitStartMessage));
-        TetrisMsg.SetBackgroundMode(BACKGND_LEAVE);
-        Sprites->RemoveSprite(&CurrentBlock);
-        memset(PlayfieldData, 0, sizeof(PlayfieldData));
-        memset(PlayfieldMask, 0, sizeof(PlayfieldMask));
-      }*/
-    }
     matrix->show();
   }
 }
