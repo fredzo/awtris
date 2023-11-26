@@ -98,7 +98,7 @@ void setup() {
   textManager->setScroolSpeed(96);
 
 
-  tetrisInit(neoMatrix, textManager, musicManager, settings);
+  tetrisInit(neoMatrix, textManager, musicManager, settings, multiPlayer);
 
 
 }

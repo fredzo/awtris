@@ -20,6 +20,10 @@ class MultiPlayer
 
         void processMultiPlayer();
 
+        void broadcastInvite();
+
+        void sendJoin();
+
 
     private :
 
@@ -30,8 +34,10 @@ class MultiPlayer
         ~MultiPlayer()
         {
         };
+        unsigned long lastBroadcastTime;
 
         static MultiPlayer *multiPlayerInstance;
+
 };
 
 #endif 
