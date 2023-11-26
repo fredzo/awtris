@@ -96,6 +96,17 @@ void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicM
   lastLoop = millis() - loopDelayMS;
 }
 
+void startNewGame()
+{
+    lastScore = 0;
+    totalLines = 0;
+    dropDelay = INITIAL_DROP_FRAMES;
+    nextBlock = true;
+    board->clearBoard();
+    tetrisMusicManager->startMelody();
+    tetrisTextManager->hideText();
+}
+
 // Callbacks for multiplayer mode
 void inviteCallback()
 {
@@ -113,6 +124,7 @@ void joinCallback()
     // TODO
     //gameState = MULTI_COUNT_DOWN;
     gameState = PLAYING_MULTI;
+    startNewGame();
   }
 }
 
@@ -140,7 +152,6 @@ void scoreCallback(int score)
 {
 
 }
-
 
 void tetrisLoop(GamePad::Command command)
 {
@@ -232,21 +243,15 @@ void tetrisLoop(GamePad::Command command)
           {
             gameState = PLAYING_SINGLE;
           }
-          lastScore = 0;
-          totalLines = 0;
-          dropDelay = INITIAL_DROP_FRAMES;
-          nextBlock = true;
           command = GamePad::NO_COMMAND;
-          board->clearBoard();
-          tetrisMusicManager->startMelody();
-          tetrisTextManager->hideText();
+          startNewGame();
         }
       }
     }
     else if(gameState == WAIT_JOIN)
     { 
-      if(command.home)
-      { // Go back to wait single player if home is pressed agail
+      if(command.a)
+      { // Go back to wait single player if a is pressed
         gameState = WAIT_START;
         showWelcomeMessage();
       }
