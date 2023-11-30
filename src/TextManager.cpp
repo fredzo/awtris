@@ -34,10 +34,6 @@ void TextManager::matrixPrint(char c)
       }
       if (bits & 0x80)
       {
-        /*Serial.print("Draw pixel ");
-        Serial.print(cursor_x + xo + xx);
-        Serial.print(", ");
-        Serial.println(cursor_y + yo + yy);*/
         x = currentX + xo + xx;
         y = currentY + yo + yy;
         if(x>=0 && y>=0 && x < SCREEN_WIDTH && y <= SCREEN_HEIGHT)
@@ -67,6 +63,7 @@ void TextManager::matrixPrintText()
 
 void TextManager::showText(int x, int y, String text, CRGB color)
 {
+  mode = SCROLL;
   xPos = x;
   yPos = y + AwtrixFont.yAdvance;
   TextManager::text = text;
@@ -78,6 +75,24 @@ void TextManager::showText(int x, int y, String text, CRGB color)
   scrollWaitStart = millis();
 }
 
+void TextManager::flashText(int x, int y, String text, CRGB color)
+{
+  mode = FLASH;
+  xPos = x;
+  yPos = y + AwtrixFont.yAdvance;
+  currentX = xPos;
+  currentY = yPos;
+  TextManager::text = text;
+  TextManager::color = color;
+  flashColor = color;
+  show = true;
+  flashValue = 0xFF;
+  flashCountDown = 0xFF;
+  flashWaitStart = millis();
+}
+
+
+
 void TextManager::hideText()
 {
   show = false;
@@ -87,22 +102,60 @@ void TextManager::renderText()
 {
   if(show)
   {
-    currentX = xPos;
-    currentY = yPos - scrollPosition;
-    matrixPrintText();
-    if(millis() >= (scrollWaitStart + scrollWait))
-    { // Start scrolling after delay
-      scrollCountDown-=scrollSpeed;
-      if(scrollCountDown <=0)
-      {
-        scrollPosition++;
-        if(scrollPosition >= textPixels)
+    switch(mode)
+    {
+      case FLASH :
         {
-          scrollPosition = 0;
-          scrollWaitStart = millis();
+          char curChar = text.charAt(curFlashCharIndex);
+          matrixPrint(curChar);
+          if(millis() >= (flashWaitStart + flashWait))
+          { // Start fading after delay
+            flashCountDown-=flashSpeed;
+            if(flashCountDown <=0)
+            {
+              flashValue--;
+              // Dim text
+              CHSV chsvColor = rgb2hsv_approximate(flashColor);
+              chsvColor.v = flashValue;
+              hsv2rgb_rainbow(chsvColor,color);
+              if(flashValue < 0)
+              { // Text is off
+                flashValue = 0xFF;
+                curFlashCharIndex++;
+                if(curFlashCharIndex>=text.length())
+                { // Stop
+                  show = false;
+                }
+                else
+                { // Show next char
+                  scrollWaitStart = millis();
+                }
+              }
+              flashCountDown = 0xFF;
+            }
+          }
         }
-        scrollCountDown = 0xFF;
-      }
+        break;
+      case SCROLL:
+      default:
+        currentX = xPos;
+        currentY = yPos - scrollPosition;
+        matrixPrintText();
+        if(millis() >= (scrollWaitStart + scrollWait))
+        { // Start scrolling after delay
+          scrollCountDown-=scrollSpeed;
+          if(scrollCountDown <=0)
+          {
+            scrollPosition++;
+            if(scrollPosition >= textPixels)
+            {
+              scrollPosition = 0;
+              scrollWaitStart = millis();
+            }
+            scrollCountDown = 0xFF;
+          }
+        }
+        break;
     }
   }
 }
