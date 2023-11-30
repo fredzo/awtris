@@ -100,7 +100,7 @@ void setup() {
   textManager->setFlashSpeed(96);
 
 
-  tetrisInit(neoMatrix, textManager, musicManager, settings);
+  tetrisInit(neoMatrix, textManager, musicManager, settings, multiPlayer);
 
 
 }

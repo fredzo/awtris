@@ -21,15 +21,16 @@ MusicManager* tetrisMusicManager;
 Settings * tetrisSettings;
 Board* board; 
 BgEffectManager* bgEffectManager;
+MultiPlayer* tetrisMultiPlayer;
 
 int completedLinesDisplayCounter = 0;
 bool hasCompletedLines = false;
 int tetrominoeFallCountdown = 0;
 
-unsigned char waitStartMessage[256], gameOverMessage[128];
+unsigned char message[256];
 
 byte dropDelay;
-enum  GameState { WAIT_START = 0, PLAYING_SINGLE, WAIT_JOIN, ASK_JOIN, PLAYING_MULTI, GAME_OVER };
+enum  GameState { WAIT_START = 0, PLAYING_SINGLE, WAIT_JOIN, ASK_JOIN, MULTI_COUNT_DOWN, PLAYING_MULTI, GAME_OVER };
 GameState gameState = WAIT_START;
 bool nextBlock;
 int totalLines;
@@ -40,12 +41,46 @@ unsigned long loopDelayMS, lastLoop, lastRotateCommand, lastLeftCommand, lastRig
 uint8_t brightness;
 uint8_t volume;
 
-void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicManager * musicManager, Settings * settings)
+void showWelcomeMessage()
+{
+  sprintf((char *)message, "AWTRIS SCORE %u HIGH %u - PRESS ANY BUTTON TO START", lastScore, highScore);
+  board->setDim(true);
+  tetrisTextManager->showText(2,0,String((const char *)message),TETROMINOE_COLORS[7]);
+}
+
+void showGameOverMessage(bool highScore)
+{
+  if(highScore)
+  {
+    sprintf((char *)message, "GAME OVER NEW HIGH SCORE %u",  lastScore);
+  }
+  else
+  {
+    sprintf((char *)message, "GAME OVER SCORE %u", lastScore);
+  }
+  board->setDim(true);
+  tetrisTextManager->showText(2,0,String((const char *)message),TETROMINOE_COLORS[7]);
+}
+
+void showWaitPlayer2Message()
+{
+  sprintf((char *)message, "WAITING FOR PLAYER 2");
+  tetrisTextManager->showText(2,0,String((const char *)message),TETROMINOE_COLORS[7]);
+}
+
+void showAskJoinMessage()
+{
+  sprintf((char *)message, "START MULTIPLAYER GAME?");
+  tetrisTextManager->showText(2,0,String((const char *)message),TETROMINOE_COLORS[7]);
+}
+
+void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicManager * musicManager, Settings * settings, MultiPlayer * multiPlayer)
 {
   matrix = ledMatrix;
   tetrisMusicManager = musicManager;
   tetrisTextManager = textManager;
   tetrisSettings = settings;
+  tetrisMultiPlayer = multiPlayer;
   board = new Board();
   bgEffectManager = new BgEffectManager();
   // Restore settings
@@ -54,24 +89,43 @@ void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicM
   highScore = tetrisSettings->getHighScore();
   bgEffectManager->setBackgroundEffect(tetrisSettings->getBackgroundEffect());
 
-  sprintf((char *)waitStartMessage, "AWTRIS SCORE %u HIGH %u - PRESS ANY BUTTON TO START", lastScore, highScore);
-  board->setDim(true);
-  tetrisTextManager->showText(2,0,String((const char *)waitStartMessage),TETROMINOE_COLORS[7]);
+  showWelcomeMessage();
 
   gameState = WAIT_START;
   loopDelayMS = TARGET_FRAME_TIME;
   lastLoop = millis() - loopDelayMS;
 }
 
+void startNewGame()
+{
+    lastScore = 0;
+    totalLines = 0;
+    dropDelay = INITIAL_DROP_FRAMES;
+    nextBlock = true;
+    board->clearBoard();
+    tetrisMusicManager->startMelody();
+    tetrisTextManager->hideText();
+}
+
 // Callbacks for multiplayer mode
 void inviteCallback()
-{ // TODO
-
+{
+  if(gameState == WAIT_START || WAIT_JOIN)
+  {
+    gameState = ASK_JOIN;
+    showAskJoinMessage();
+  }
 }
 
 void joinCallback()
-{ // TODO
-
+{
+  if(gameState == WAIT_JOIN || ASK_JOIN)
+  {
+    // TODO
+    //gameState = MULTI_COUNT_DOWN;
+    gameState = PLAYING_MULTI;
+    startNewGame();
+  }
 }
 
 void levelCallback(int level)
@@ -98,7 +152,6 @@ void scoreCallback(int score)
 {
 
 }
-
 
 void tetrisLoop(GamePad::Command command)
 {
@@ -168,22 +221,46 @@ void tetrisLoop(GamePad::Command command)
     // Render background effect
     bgEffectManager->render(matrix);
 
-    if (gameState == WAIT_START || gameState == GAME_OVER)
+    if (gameState == WAIT_START || gameState == GAME_OVER || gameState == ASK_JOIN)
     { // Waiting for the player (+ prevent from starting a new game to soon after game over)
       if((millis() > (gameOverTime + GAME_OVER_WAIT_TIME)) && command.hasCommand())
-      { // Start new game !
-        gameState = PLAYING_SINGLE;
-        lastScore = 0;
-        totalLines = 0;
-        dropDelay = INITIAL_DROP_FRAMES;
-        nextBlock = true;
-        command = GamePad::NO_COMMAND;
-        board->clearBoard();
-        tetrisMusicManager->startMelody();
-        tetrisTextManager->hideText();
+      { 
+        if(command.home)
+        { // Invite for multiplayer
+          gameState = WAIT_JOIN;
+          showWaitPlayer2Message();
+        }
+        else
+        { // Start new game !
+          if(gameState == ASK_JOIN)
+          {
+            tetrisMultiPlayer->sendJoin();
+            // TODO
+            //gameState = MULTI_COUNT_DOWN;
+            gameState = PLAYING_MULTI;
+          }
+          else
+          {
+            gameState = PLAYING_SINGLE;
+          }
+          command = GamePad::NO_COMMAND;
+          startNewGame();
+        }
       }
     }
-    else
+    else if(gameState == WAIT_JOIN)
+    { 
+      if(command.a)
+      { // Go back to wait single player if a is pressed
+        gameState = WAIT_START;
+        showWelcomeMessage();
+      }
+      else
+      { // Broadcast invite message
+        tetrisMultiPlayer->broadcastInvite();
+      }
+    }
+    else if(gameState == PLAYING_SINGLE || gameState == PLAYING_MULTI)
     { // Game started
       // Un-dim board
       board->setDim(false);
@@ -305,13 +382,12 @@ void tetrisLoop(GamePad::Command command)
             {
               highScore = lastScore;
               tetrisSettings->setHighScore(highScore);
-              sprintf((char *)gameOverMessage, "GAME OVER NEW HIGH SCORE %u",  lastScore);
+              showGameOverMessage(true);
             }
             else
-              sprintf((char *)gameOverMessage, "GAME OVER SCORE %u", lastScore);
-            //sprintf((char *)waitStartMessage, "%sTETRIS%sSCORE %u%sHIGH %u%sANY BUTTON TO START%s", BlankMsg, BlankMsg, lastScore, BlankMsg, highScore, BlankMsg, BlankMsg);
-            board->setDim(true);
-            tetrisTextManager->showText(2,0,String((const char *)gameOverMessage),TETROMINOE_COLORS[7]);
+            {
+              showGameOverMessage(false);
+            }
             gameOverTime = millis();
           }
         }
