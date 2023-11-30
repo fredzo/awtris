@@ -53,7 +53,6 @@ class TextManager
         int scrollSpeed;
         int flashSpeed;
         int scrollCountDown;
-        int flashCountDown;
         int textPixels;
         unsigned long scrollWait;
         unsigned long scrollWaitStart;

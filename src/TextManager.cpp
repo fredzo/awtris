@@ -87,7 +87,6 @@ void TextManager::flashText(int x, int y, String text, CRGB color)
   flashColor = color;
   show = true;
   flashValue = 0xFF;
-  flashCountDown = 0xFF;
   flashWaitStart = millis();
 }
 
@@ -110,28 +109,23 @@ void TextManager::renderText()
           matrixPrint(curChar);
           if(millis() >= (flashWaitStart + flashWait))
           { // Start fading after delay
-            flashCountDown-=flashSpeed;
-            if(flashCountDown <=0)
-            {
-              flashValue--;
-              // Dim text
-              CHSV chsvColor = rgb2hsv_approximate(flashColor);
-              chsvColor.v = flashValue;
-              hsv2rgb_rainbow(chsvColor,color);
-              if(flashValue < 0)
-              { // Text is off
-                flashValue = 0xFF;
-                curFlashCharIndex++;
-                if(curFlashCharIndex>=text.length())
-                { // Stop
-                  show = false;
-                }
-                else
-                { // Show next char
-                  scrollWaitStart = millis();
-                }
+            flashValue-=flashSpeed;
+            // Dim text
+            CHSV chsvColor = rgb2hsv_approximate(flashColor);
+            chsvColor.v = flashValue;
+            hsv2rgb_rainbow(chsvColor,color);
+            if(flashValue < 0)
+            { // Text is off
+              flashValue = 0xFF;
+              curFlashCharIndex++;
+              if(curFlashCharIndex>=text.length())
+              { // Stop
+                show = false;
               }
-              flashCountDown = 0xFF;
+              else
+              { // Show next char
+                scrollWaitStart = millis();
+              }
             }
           }
         }

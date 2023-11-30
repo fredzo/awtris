@@ -97,7 +97,7 @@ void setup() {
   textManager->setScrollWait(1000);
   textManager->setScroolSpeed(96);
   textManager->setFlashWait(200);
-  textManager->setFlashSpeed(96);
+  textManager->setFlashSpeed(4);
 
 
   tetrisInit(neoMatrix, textManager, musicManager, settings, multiPlayer);

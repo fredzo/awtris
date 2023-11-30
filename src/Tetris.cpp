@@ -107,6 +107,12 @@ void startNewGame()
     tetrisTextManager->hideText();
 }
 
+void startCountDown()
+{
+    gameState = MULTI_COUNT_DOWN;
+    tetrisTextManager->flashText(2,0,"3210",TETROMINOE_COLORS[7]);
+}
+
 // Callbacks for multiplayer mode
 void inviteCallback()
 {
@@ -122,9 +128,9 @@ void joinCallback()
   if(gameState == WAIT_JOIN || ASK_JOIN)
   {
     // TODO
-    //gameState = MULTI_COUNT_DOWN;
-    gameState = PLAYING_MULTI;
-    startNewGame();
+    startCountDown();
+    //gameState = PLAYING_MULTI;
+    //startNewGame();
   }
 }
 
@@ -236,8 +242,8 @@ void tetrisLoop(GamePad::Command command)
           {
             tetrisMultiPlayer->sendJoin();
             // TODO
-            //gameState = MULTI_COUNT_DOWN;
-            gameState = PLAYING_MULTI;
+            startCountDown();
+            //gameState = PLAYING_MULTI;
           }
           else
           {
