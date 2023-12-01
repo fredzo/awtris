@@ -74,11 +74,40 @@ void showAskJoinMessage()
   tetrisTextManager->showText(2,0,String((const char *)message),TETROMINOE_COLORS[7]);
 }
 
+void startNewGame()
+{
+    lastScore = 0;
+    totalLines = 0;
+    dropDelay = INITIAL_DROP_FRAMES;
+    nextBlock = true;
+    board->clearBoard();
+    tetrisMusicManager->startMelody();
+    tetrisTextManager->hideText();
+}
+
+void flashCountdownCallback(int count)
+{ // Called each time a new number is displayed during countdown
+  if(count == 0)
+  { // Finished
+    gameState = PLAYING_MULTI;
+    startNewGame();
+  }
+  else if(count == 1)
+  { // Last
+    tetrisMusicManager->playCountDownSound(true);
+  }
+  else
+  { // Other
+    tetrisMusicManager->playCountDownSound(false);
+  }
+}
+
 void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicManager * musicManager, Settings * settings, MultiPlayer * multiPlayer)
 {
   matrix = ledMatrix;
   tetrisMusicManager = musicManager;
   tetrisTextManager = textManager;
+  tetrisTextManager->setFlashCallback(flashCountdownCallback);
   tetrisSettings = settings;
   tetrisMultiPlayer = multiPlayer;
   board = new Board();
@@ -94,17 +123,6 @@ void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicM
   gameState = WAIT_START;
   loopDelayMS = TARGET_FRAME_TIME;
   lastLoop = millis() - loopDelayMS;
-}
-
-void startNewGame()
-{
-    lastScore = 0;
-    totalLines = 0;
-    dropDelay = INITIAL_DROP_FRAMES;
-    nextBlock = true;
-    board->clearBoard();
-    tetrisMusicManager->startMelody();
-    tetrisTextManager->hideText();
 }
 
 void startCountDown()
@@ -127,10 +145,7 @@ void joinCallback()
 {
   if(gameState == WAIT_JOIN || ASK_JOIN)
   {
-    // TODO
     startCountDown();
-    //gameState = PLAYING_MULTI;
-    //startNewGame();
   }
 }
 
@@ -241,16 +256,14 @@ void tetrisLoop(GamePad::Command command)
           if(gameState == ASK_JOIN)
           {
             tetrisMultiPlayer->sendJoin();
-            // TODO
             startCountDown();
-            //gameState = PLAYING_MULTI;
           }
           else
           {
             gameState = PLAYING_SINGLE;
+            startNewGame();
           }
           command = GamePad::NO_COMMAND;
-          startNewGame();
         }
       }
     }

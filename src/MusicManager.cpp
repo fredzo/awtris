@@ -10,6 +10,8 @@ const char tetrisEffectString[] = "line:d=4,o=5,b=120:16d6,8d6,16f#6,8a6,8f#6,2a
 const char onePenaltyEffectString[] = "line:d=4,o=5,b=300:32a6,32g#6,32g6,32f#6,32f6,32e6,32d#6,32d6";
 const char twoPenaltiesEffectString[] = "line:d=4,o=5,b=140:16a5,8a5,16f#5,8d5";
 const char tetrisPenaltyEffectString[] = "line:d=4,o=5,b=120:16a5,8a5,16f#5,8d5,8f#5,2d5";
+const char countdownHighEffectString[] = "count:d=4,o=5,b=140:e6,8p";
+const char countdownLowEffectString[] = "count:d=4,o=5,b=100:8e5,8p";
 
 
 void MusicManager::init()
@@ -22,6 +24,8 @@ void MusicManager::init()
   onePenaltyEffect = MelodyFactory.loadRtttlString(onePenaltyEffectString);
   twoPenaltiesEffect = MelodyFactory.loadRtttlString(twoPenaltiesEffectString);
   tetrisPenaltyEffect = MelodyFactory.loadRtttlString(tetrisPenaltyEffectString);
+  countdownHighEffect = MelodyFactory.loadRtttlString(countdownHighEffectString);
+  countdownLowEffect = MelodyFactory.loadRtttlString(countdownLowEffectString);
 }
 
 void MusicManager::setVolume(byte volume)
@@ -87,6 +91,19 @@ void MusicManager::playPenaltySound(int numLines)
       break;
   }
 }
+
+void MusicManager::playCountDownSound(bool last)
+{
+  if(last)
+  {
+      effectPlayer->playAsync(countdownHighEffect,false,stopMelodyCallback);
+  }
+  else
+  {
+      effectPlayer->playAsync(countdownLowEffect,false,stopMelodyCallback);
+  }
+}
+
 
 void MusicManager::playGameOverSound()
 {

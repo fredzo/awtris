@@ -27,6 +27,8 @@ class TextManager
 
         void setFlashWait(unsigned long millis) {TextManager::flashWait = millis;};
 
+        void setFlashCallback(void (*flashCallbackFunction)(int count)) {TextManager::flashCallbackFunction = flashCallbackFunction;};
+
         void showText(int x, int y, String text, CRGB color);
 
         void flashText(int x, int y, String text, CRGB color);
@@ -46,6 +48,7 @@ class TextManager
         int scrollPosition = 0;
         int flashValue = 0xFF;
         int curFlashCharIndex = 0;
+        int curFlashCountDown = 0;
         CRGB color;
         CRGB flashColor;
         bool show = false;
@@ -58,6 +61,8 @@ class TextManager
         unsigned long scrollWaitStart;
         unsigned long flashWait;
         unsigned long flashWaitStart;
+        void (*flashCallbackFunction)(int count) = NULL;
+
 
         TextManager()
         {

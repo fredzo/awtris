@@ -77,17 +77,24 @@ void TextManager::showText(int x, int y, String text, CRGB color)
 
 void TextManager::flashText(int x, int y, String text, CRGB color)
 {
-  mode = FLASH;
-  xPos = x;
-  yPos = y + AwtrixFont.yAdvance;
-  currentX = xPos;
-  currentY = yPos;
-  TextManager::text = text;
-  TextManager::color = color;
-  flashColor = color;
-  show = true;
-  flashValue = 0xFF;
-  flashWaitStart = millis();
+  int length = text.length();
+  if(length > 0)
+  {
+    mode = FLASH;
+    xPos = x;
+    yPos = y + AwtrixFont.yAdvance;
+    currentX = xPos;
+    currentY = yPos;
+    TextManager::text = text;
+    TextManager::color = color;
+    flashColor = color;
+    show = true;
+    flashValue = 0xFF;
+    curFlashCharIndex = 0;
+    curFlashCountDown = length;
+    if(flashCallbackFunction) flashCallbackFunction(curFlashCountDown);
+    flashWaitStart = millis();
+  }
 }
 
 
@@ -118,9 +125,12 @@ void TextManager::renderText()
             { // Text is off
               flashValue = 0xFF;
               curFlashCharIndex++;
-              if(curFlashCharIndex>=text.length())
+              curFlashCountDown--;
+              if(flashCallbackFunction) flashCallbackFunction(curFlashCountDown);
+              if(curFlashCountDown<=0)
               { // Stop
                 show = false;
+                curFlashCharIndex = 0;
               }
               else
               { // Show next char
