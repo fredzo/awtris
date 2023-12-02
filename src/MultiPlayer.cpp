@@ -29,6 +29,11 @@ static int extractParameter(String message)
     return result;
 }
 
+static String formatMessage(String message, int parameter)
+{
+    return (message + ':' + parameter);
+}
+
 void MultiPlayer::broadcastInvite()
 {
     if(millis()>=(lastBroadcastTime + BRAODCAST_DELAY))
@@ -41,6 +46,26 @@ void MultiPlayer::broadcastInvite()
 void MultiPlayer::sendJoin()
 {
     broadcastMessage(JOIN_MESSAGE);
+}
+
+void MultiPlayer::sendLevel(int level)
+{
+    broadcastMessage(formatMessage(LEVEL_MESSAGE_PREFIX,level));
+}
+
+void MultiPlayer::sendLine(int lines)
+{
+    broadcastMessage(formatMessage(LINE_MESSAGE_PREFIX,lines));
+}
+
+void MultiPlayer::sendScore(int score)
+{
+    broadcastMessage(formatMessage(SCORE_MESSAGE_PREFIX,score));
+}
+
+void MultiPlayer::sendGameOver(int score)
+{
+    broadcastMessage(GAME_OVER_MESSAGE_PREFIX);
 }
 
 void MultiPlayer::processMultiPlayer()

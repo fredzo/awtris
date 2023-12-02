@@ -33,12 +33,14 @@ class TextManager
 
         void flashText(int x, int y, String text, CRGB color);
 
+        void flashNumber(int x, int y, int number, CRGB color);
+
         void hideText();
 
         void renderText();
 
     private :
-        enum Mode { SCROLL, FLASH};
+        enum Mode { SCROLL, FLASH, FLASH_NUMBER};
         Mode mode = SCROLL;
         FastLED_NeoMatrix *matrix = NULL;
         int xPos = 0;
@@ -74,6 +76,7 @@ class TextManager
 
         void matrixPrint(char c);
         void matrixPrintText();
+        void matrixPrintNumber();
 
         static TextManager *textManagerInstance;
 };

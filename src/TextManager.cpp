@@ -61,6 +61,22 @@ void TextManager::matrixPrintText()
   }
 }
 
+void TextManager::matrixPrintNumber()
+{
+  const char* str = text.c_str();
+  while (*str)
+  {
+    char c = *str++;
+    if (c >= AwtrixFont.first && c <= AwtrixFont.last && currentY)
+    {
+      GFXglyph *glyph = &AwtrixFont.glyph[c - AwtrixFont.first];
+      matrixPrint(c);
+      currentX += (*glyph).xAdvance;
+    }
+  }
+  currentX = xPos;
+}
+
 void TextManager::showText(int x, int y, String text, CRGB color)
 {
   mode = SCROLL;
@@ -97,6 +113,26 @@ void TextManager::flashText(int x, int y, String text, CRGB color)
   }
 }
 
+void TextManager::flashNumber(int x, int y, int number, CRGB color)
+{
+  mode = FLASH_NUMBER;
+  xPos = x;
+  yPos = y + AwtrixFont.yAdvance;
+  currentX = xPos;
+  currentY = yPos;
+  text = String(number);
+  if(number < 10)
+  {
+    text = '0' + text;
+  }
+  TextManager::color = color;
+  flashColor = color;
+  show = true;
+  flashValue = 0xFF;
+  curFlashCharIndex = 0;
+  curFlashCountDown = 1;
+  flashWaitStart = millis();
+}
 
 
 void TextManager::hideText()
@@ -111,9 +147,17 @@ void TextManager::renderText()
     switch(mode)
     {
       case FLASH :
+      case FLASH_NUMBER :
         {
-          char curChar = text.charAt(curFlashCharIndex);
-          matrixPrint(curChar);
+          if(mode == FLASH)
+          { // Flash text
+            char curChar = text.charAt(curFlashCharIndex);
+            matrixPrint(curChar);
+          }
+          else
+          { // Flash numner
+            matrixPrintNumber();
+          }
           if(millis() >= (flashWaitStart + flashWait))
           { // Start fading after delay
             flashValue-=flashSpeed;
@@ -126,7 +170,7 @@ void TextManager::renderText()
               flashValue = 0xFF;
               curFlashCharIndex++;
               curFlashCountDown--;
-              if(flashCallbackFunction) flashCallbackFunction(curFlashCountDown);
+              if((mode == FLASH) && flashCallbackFunction) flashCallbackFunction(curFlashCountDown);
               if(curFlashCountDown<=0)
               { // Stop
                 show = false;

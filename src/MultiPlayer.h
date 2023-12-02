@@ -24,6 +24,14 @@ class MultiPlayer
 
         void sendJoin();
 
+        void sendLevel(int level);
+
+        void sendLine(int lines);
+
+        void sendScore(int score);
+
+        void sendGameOver(int score);
+
 
     private :
 

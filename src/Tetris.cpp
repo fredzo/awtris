@@ -34,6 +34,7 @@ enum  GameState { WAIT_START = 0, PLAYING_SINGLE, WAIT_JOIN, ASK_JOIN, MULTI_COU
 GameState gameState = WAIT_START;
 bool nextBlock;
 int totalLines;
+int level;
 int highScore = 0, lastScore;
 
 unsigned long loopDelayMS, lastLoop, lastRotateCommand, lastLeftCommand, lastRightCommand, lastPlusMinusCommand, gameOverTime;
@@ -78,6 +79,7 @@ void startNewGame()
 {
     lastScore = 0;
     totalLines = 0;
+    level = 0;
     dropDelay = INITIAL_DROP_FRAMES;
     nextBlock = true;
     board->clearBoard();
@@ -131,6 +133,12 @@ void startCountDown()
     tetrisTextManager->flashText(2,0,"3210",TETROMINOE_COLORS[7]);
 }
 
+void setLevel(int level)
+{
+    tetrisTextManager->flashNumber(0,0,level,TETROMINOE_COLORS[7]);
+    dropDelay = _max(1, INITIAL_DROP_FRAMES - (level * 2));
+}
+
 // Callbacks for multiplayer mode
 void inviteCallback()
 {
@@ -149,9 +157,10 @@ void joinCallback()
   }
 }
 
-void levelCallback(int level)
-{ // TODO
-
+void levelCallback(int levelParam)
+{
+  level = levelParam;
+  setLevel(level);
 }
 
 void addLineCallback(int numLines)
@@ -372,16 +381,32 @@ void tetrisLoop(GamePad::Command command)
               // Update tempo
               tetrisMusicManager->increaseTempo(numlines);
               if (numlines == 1)
+              {
                 lastScore += 4;
+              }
               else if (numlines == 2)
+              {
                 lastScore += 12;
+                if(gameState == PLAYING_MULTI) tetrisMultiPlayer->sendLine(1);
+              }
               else if (numlines == 3)
+              {
                 lastScore += 20;
+                if(gameState == PLAYING_MULTI) tetrisMultiPlayer->sendLine(2);
+              }
               else if (numlines == 4)
+              {
                 lastScore += 40;
+                if(gameState == PLAYING_MULTI) tetrisMultiPlayer->sendLine(4);
+              }
               // Reduce drop delay according to new line count
               totalLines += numlines;
-              dropDelay = _max(1, INITIAL_DROP_FRAMES - (totalLines / 5));
+              if((totalLines / 10) > level)
+              {
+                level++;
+                if(gameState == PLAYING_MULTI) tetrisMultiPlayer->sendLevel(level);
+                setLevel(level);
+              }
             }
           }
           // Start the new block
