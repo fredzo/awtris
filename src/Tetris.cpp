@@ -13,7 +13,7 @@
 
 #define COMPLETED_LINE_DISPLAY_TIME   15 // 15 Frames
 
-#define GAME_OVER_WAIT_TIME   5000  // Wait for 5 sec before starting an new game
+#define GAME_OVER_WAIT_TIME   3000  // Wait for 5 sec before starting an new game
 
 FastLED_NeoMatrix *matrix;
 TextManager* tetrisTextManager;
@@ -61,6 +61,7 @@ void showGameOverMessage(bool highScore)
   }
   board->setDim(true);
   tetrisTextManager->showText(2,0,String((const char *)message),TETROMINOE_COLORS[7]);
+  gameOverTime = millis();
 }
 
 void showYouLoseMessage(int otherScore)
@@ -68,6 +69,7 @@ void showYouLoseMessage(int otherScore)
   sprintf((char *)message, "YOU LOSE! SCORE %u vs %u", lastScore, otherScore);
   board->setDim(true);
   tetrisTextManager->showText(2,0,String((const char *)message),TETROMINOE_COLORS[7]);
+  gameOverTime = millis();
 }
 
 void showYouWinMessage(int otherScore)
@@ -75,6 +77,7 @@ void showYouWinMessage(int otherScore)
   sprintf((char *)message, "YOU WIN! SCORE %u vs %u", lastScore, otherScore);
   board->setDim(true);
   tetrisTextManager->showText(2,0,String((const char *)message),TETROMINOE_COLORS[7]);
+  gameOverTime = millis();
 }
 
 void showWaitPlayer2Message()
@@ -193,6 +196,7 @@ void addLineCallback(int numLines)
 void gameOverCallback(int score)
 {
   gameState = GAME_OVER;
+  tetrisMultiPlayer->sendScore(lastScore);
   tetrisMusicManager->playYouWinSound();
   showYouWinMessage(score);
 }
@@ -459,7 +463,6 @@ void tetrisLoop(GamePad::Command command)
               }
             }
             gameState = GAME_OVER;
-            gameOverTime = millis();
           }
         }
         // Update falldown counter
