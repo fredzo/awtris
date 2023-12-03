@@ -190,8 +190,7 @@ void levelCallback(int levelParam)
 }
 
 void addLineCallback(int numLines)
-{ // TODO : handle game state
-  // Only allow 1 (for 2 lines of other player),2 (for 3lines) or 4 lines for a Tetris
+{ // Only allow 1 (for 2 lines of other player),2 (for 3lines) or 4 lines for a Tetris
   if((numLines == 1) || (numLines == 2) || (numLines == 4))
   {
     tetrisMusicManager->playPenaltySound(numLines);
