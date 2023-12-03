@@ -443,7 +443,7 @@ void tetrisLoop(GamePad::Command command)
             if(gameState == PLAYING_MULTI)
             {
               showYouLoseMessage(0);
-              tetrisMultiPlayer->sendGameOver(level);
+              tetrisMultiPlayer->sendGameOver(lastScore);
             }
             else
             { // Check high score in single player mode only
