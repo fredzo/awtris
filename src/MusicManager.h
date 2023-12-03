@@ -68,7 +68,7 @@ class MusicManager
         MusicManager()
         {
             player = new MelodyPlayer(BUZZER_PIN,0,LOW);
-            effectPlayer = new MelodyPlayer(BUZZER_PIN,0,LOW);
+            effectPlayer = new MelodyPlayer(BUZZER_PIN,1,LOW);
         };
 
         ~MusicManager()

@@ -96,11 +96,11 @@ void MusicManager::playCountDownSound(bool last)
 {
   if(last)
   {
-      effectPlayer->playAsync(countdownHighEffect,false,stopMelodyCallback);
+      player->playAsync(countdownHighEffect);
   }
   else
   {
-      effectPlayer->playAsync(countdownLowEffect,false,stopMelodyCallback);
+      player->playAsync(countdownLowEffect);
   }
 }
 
