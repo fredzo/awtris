@@ -193,6 +193,7 @@ void addLineCallback(int numLines)
 void gameOverCallback(int score)
 {
   gameState = GAME_OVER;
+  tetrisMusicManager->playYouWinSound();
   showYouWinMessage(score);
 }
 
@@ -438,7 +439,6 @@ void tetrisLoop(GamePad::Command command)
           else
           { // New Tetrominoe could not be added => Game over
             tetrominoeFallCountdown = 2;
-            gameState = GAME_OVER;
             tetrisMusicManager->playGameOverSound();
             if(gameState == PLAYING_MULTI)
             {
@@ -458,6 +458,7 @@ void tetrisLoop(GamePad::Command command)
                 showGameOverMessage(false);
               }
             }
+            gameState = GAME_OVER;
             gameOverTime = millis();
           }
         }

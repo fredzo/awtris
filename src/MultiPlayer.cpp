@@ -65,7 +65,7 @@ void MultiPlayer::sendScore(int score)
 
 void MultiPlayer::sendGameOver(int score)
 {
-    broadcastMessage(GAME_OVER_MESSAGE_PREFIX);
+    broadcastMessage(formatMessage(GAME_OVER_MESSAGE_PREFIX,score));
 }
 
 void MultiPlayer::processMultiPlayer()

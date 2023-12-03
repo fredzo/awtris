@@ -41,6 +41,8 @@ class MusicManager
 
         void playGameOverSound();
 
+        void playYouWinSound();
+
         void unmute();
 
 

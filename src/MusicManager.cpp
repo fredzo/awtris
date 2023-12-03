@@ -110,6 +110,11 @@ void MusicManager::playGameOverSound()
   player->playAsync(gameOverMelody);
 }
 
+void MusicManager::playYouWinSound()
+{
+  player->playAsync(tetrisEffect);
+}
+
 void MusicManager::increaseTempo(int increment)
 {
   tempo+=(increment*TEMPO_INCREMENT);
