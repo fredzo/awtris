@@ -63,6 +63,20 @@ void showGameOverMessage(bool highScore)
   tetrisTextManager->showText(2,0,String((const char *)message),TETROMINOE_COLORS[7]);
 }
 
+void showYouLoseMessage(int otherScore)
+{
+  sprintf((char *)message, "YOU LOSE! SCORE %u vs %u", lastScore, otherScore);
+  board->setDim(true);
+  tetrisTextManager->showText(2,0,String((const char *)message),TETROMINOE_COLORS[7]);
+}
+
+void showYouWinMessage(int otherScore)
+{
+  sprintf((char *)message, "YOU WIN! SCORE %u vs %u", lastScore, otherScore);
+  board->setDim(true);
+  tetrisTextManager->showText(2,0,String((const char *)message),TETROMINOE_COLORS[7]);
+}
+
 void showWaitPlayer2Message()
 {
   sprintf((char *)message, "WAITING FOR PLAYER 2");
@@ -159,8 +173,11 @@ void joinCallback()
 
 void levelCallback(int levelParam)
 {
-  level = levelParam;
-  setLevel(level);
+  if(levelParam > level)
+  {
+    level = levelParam;
+    setLevel(level);
+  }
 }
 
 void addLineCallback(int numLines)
@@ -175,12 +192,13 @@ void addLineCallback(int numLines)
 
 void gameOverCallback(int score)
 {
-
+  gameState = GAME_OVER;
+  showYouWinMessage(score);
 }
 
 void scoreCallback(int score)
 {
-
+  showYouLoseMessage(score);
 }
 
 void tetrisLoop(GamePad::Command command)
@@ -422,15 +440,23 @@ void tetrisLoop(GamePad::Command command)
             tetrominoeFallCountdown = 2;
             gameState = GAME_OVER;
             tetrisMusicManager->playGameOverSound();
-            if (lastScore > highScore)
+            if(gameState == PLAYING_MULTI)
             {
-              highScore = lastScore;
-              tetrisSettings->setHighScore(highScore);
-              showGameOverMessage(true);
+              showYouLoseMessage(0);
+              tetrisMultiPlayer->sendGameOver(level);
             }
             else
-            {
-              showGameOverMessage(false);
+            { // Check high score in single player mode only
+              if (lastScore > highScore)
+              {
+                highScore = lastScore;
+                tetrisSettings->setHighScore(highScore);
+                showGameOverMessage(true);
+              }
+              else
+              {
+                showGameOverMessage(false);
+              }
             }
             gameOverTime = millis();
           }
