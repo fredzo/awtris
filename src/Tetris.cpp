@@ -23,6 +23,8 @@ Board* board;
 BgEffectManager* bgEffectManager;
 MultiPlayer* tetrisMultiPlayer;
 
+bool playerOne = true;
+
 int completedLinesDisplayCounter = 0;
 bool hasCompletedLines = false;
 int tetrominoeFallCountdown = 0;
@@ -92,7 +94,7 @@ void showAskJoinMessage()
   tetrisTextManager->showText(2,0,String((const char *)message),TETROMINOE_COLORS[7]);
 }
 
-void startNewGame()
+void startNewGame(bool music)
 {
     lastScore = 0;
     totalLines = 0;
@@ -100,7 +102,7 @@ void startNewGame()
     dropDelay = INITIAL_DROP_FRAMES;
     nextBlock = true;
     board->clearBoard();
-    tetrisMusicManager->startMelody();
+    music ? tetrisMusicManager->startMelody() : tetrisMusicManager->stopMelody();
     tetrisTextManager->hideText();
 }
 
@@ -109,7 +111,7 @@ void flashCountdownCallback(int count)
   if(count == 0)
   { // Finished
     gameState = PLAYING_MULTI;
-    startNewGame();
+    startNewGame(playerOne);
   }
   else if(count == 1)
   { // Last
@@ -144,9 +146,10 @@ void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicM
   lastLoop = millis() - loopDelayMS;
 }
 
-void startCountDown()
+void startCountDown(bool playerOneParam)
 {
     gameState = MULTI_COUNT_DOWN;
+    playerOne = playerOneParam;
     tetrisTextManager->flashText(2,0,"3210",TETROMINOE_COLORS[7]);
 }
 
@@ -159,8 +162,8 @@ void setLevel(int level)
 // Callbacks for multiplayer mode
 void inviteCallback()
 {
-  if(gameState == WAIT_START || WAIT_JOIN)
-  {
+  // if(gameState == WAIT_START || WAIT_JOIN)
+  { // Allow inivite at any time to make multiplayer mode easyer to reacj
     gameState = ASK_JOIN;
     showAskJoinMessage();
   }
@@ -168,9 +171,9 @@ void inviteCallback()
 
 void joinCallback()
 {
-  if(gameState == WAIT_JOIN || ASK_JOIN)
-  {
-    startCountDown();
+  //if(gameState == WAIT_JOIN || ASK_JOIN)
+  { // Allow inivite at any time to make multiplayer mode easyer to reacj
+    startCountDown(true);
   }
 }
 
@@ -196,9 +199,9 @@ void addLineCallback(int numLines)
 void gameOverCallback(int score)
 {
   gameState = GAME_OVER;
-  tetrisMultiPlayer->sendScore(lastScore);
   tetrisMusicManager->playYouWinSound();
   showYouWinMessage(score);
+  tetrisMultiPlayer->sendScore(lastScore);
 }
 
 void scoreCallback(int score)
@@ -288,12 +291,12 @@ void tetrisLoop(GamePad::Command command)
           if(gameState == ASK_JOIN)
           {
             tetrisMultiPlayer->sendJoin();
-            startCountDown();
+            startCountDown(false);
           }
           else
           {
             gameState = PLAYING_SINGLE;
-            startNewGame();
+            startNewGame(true);
           }
           command = GamePad::NO_COMMAND;
         }
