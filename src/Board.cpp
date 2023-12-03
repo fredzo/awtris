@@ -14,6 +14,9 @@ void Board::clearBoard()
             pixels[i][j] = Pixel::OFF;
         }
     }
+    // Delete current tetrominoe if needed
+    delete currentTetrominoe;
+    currentTetrominoe = NULL;
 }
  
 bool Board::addTetrominoe(Tetrominoe::Type type)
