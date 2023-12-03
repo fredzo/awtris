@@ -24,6 +24,7 @@ BgEffectManager* bgEffectManager;
 MultiPlayer* tetrisMultiPlayer;
 
 bool playerOne = true;
+bool inviteReceived = false;
 
 int completedLinesDisplayCounter = 0;
 bool hasCompletedLines = false;
@@ -101,6 +102,7 @@ void startNewGame(bool music)
     level = 0;
     dropDelay = INITIAL_DROP_FRAMES;
     nextBlock = true;
+    inviteReceived = false;
     board->clearBoard();
     music ? tetrisMusicManager->startMelody() : tetrisMusicManager->stopMelody();
     tetrisTextManager->hideText();
@@ -165,6 +167,7 @@ void inviteCallback()
   // if(gameState == WAIT_START || WAIT_JOIN)
   { // Allow inivite at any time to make multiplayer mode easyer to reacj
     gameState = ASK_JOIN;
+    inviteReceived = true;
     showAskJoinMessage();
   }
 }
@@ -288,7 +291,7 @@ void tetrisLoop(GamePad::Command command)
         }
         else
         { // Start new game !
-          if(gameState == ASK_JOIN)
+          if(gameState == ASK_JOIN || inviteReceived)
           {
             tetrisMultiPlayer->sendJoin();
             startCountDown(false);
