@@ -20,11 +20,11 @@
     <img src="docs/awtris-logo.png" alt="Logo" height="80">
   </a>
 
-  <h3 align="center">Best-README-Template</h3>
+  <h3 align="center">Awtris</h3>
 
   <p align="center">
-    A Tetris game for [Awtrix devices](https://awtrixdocs.blueforcer.de/#/en-en/README)!
-    <br />
+    A Tetris game for <a href="https://awtrixdocs.blueforcer.de/#/en-en/README">Awtrix devices</a>!
+    <!--br />
     <a href="https://github.com/fredzo/awtris/docs"><strong>Explore the docs »</strong></a>
     <br />
     <br />
@@ -32,7 +32,7 @@
     ·
     <a href="https://github.com/fredzo/awtris/issues">Report Bug</a>
     ·
-    <a href="https://github.com/fredzo/awtris/issues">Request Feature</a>
+    <a href="https://github.com/fredzo/awtris/issues">Request Feature</a-->
   </p>
 </div>
 
