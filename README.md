@@ -37,7 +37,7 @@
 </div>
 
 <!-- TABLE OF CONTENTS -->
-<details>
+<!--details>
   <summary>Table of Contents</summary>
   <ol>
     <li>
@@ -60,7 +60,7 @@
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
-</details>
+</details-->
 
 
 
@@ -72,8 +72,7 @@
 This project is a Tetris game designed to run on an [Ulanzi Desktop Clock](https://www.ulanzi.com/products/ulanzi-pixel-smart-clock-2882) paired with
 Wiimote controller for game conmands.
 
-It's inpired by the work of [Aaron Liddiment](https://github.com/AaronLiddiment) and [Scott Marley] (https://www.youtube.com/watch?v=cqmWfE1DSyM).
-
+It's inpired by the work of [Aaron Liddiment](https://github.com/AaronLiddiment) and [Scott Marley](https://www.youtube.com/watch?v=cqmWfE1DSyM).
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -82,9 +81,8 @@ It's inpired by the work of [Aaron Liddiment](https://github.com/AaronLiddiment)
 
 ### Built With
 
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
-
-* [![Next][Next.js]][Next-url]
+This project is built this frameworks/libraries:
+* [![PlatformIO][PlatformIO]][PlatformIO-url]
 * [![React][React.js]][React-url]
 * [![Vue][Vue.js]][Vue-url]
 * [![Angular][Angular.io]][Angular-url]
@@ -227,10 +225,6 @@ Use this space to list resources you find helpful and would like to give credit 
 [stars-url]: https://github.com/fredzo/awtris/stargazers
 [issues-shield]: https://img.shields.io/github/issues/fredzo/awtris.svg?style=for-the-badge
 [issues-url]: https://github.com/fredzo/awtris/issues
-[license-shield]: https://img.shields.io/github/license/fredzo/awtris.svg?style=for-the-badge
-[license-url]: https://github.com/fredzo/awtris/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/othneildrew
 [product-screenshot]: docs/awtris.png
-[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
-[Next-url]: https://nextjs.org/
+[PlatformIO]: https://img.shields.io/badge/platformio.org-000000?style=for-the-badge&logo=platformio&logoColor=orange
+[PlatformIO-url]: https://platformio.org/
