@@ -83,13 +83,12 @@ It's inpired by the work of [Aaron Liddiment](https://github.com/AaronLiddiment)
 
 This project is built this frameworks/libraries:
 * [![PlatformIO][PlatformIO]][PlatformIO-url]
-* [![React][React.js]][React-url]
-* [![Vue][Vue.js]][Vue-url]
-* [![Angular][Angular.io]][Angular-url]
-* [![Svelte][Svelte.dev]][Svelte-url]
-* [![Laravel][Laravel.com]][Laravel-url]
-* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
-* [![JQuery][JQuery.com]][JQuery-url]
+* [![ESP32][ESP32]][ESP32-url]
+* [![MelodyPlayer][MelodyPlayer]][MelodyPlayer-url]
+* [![ESP32Wiimote][ESP32Wiimote]][ESP32Wiimote-url]
+* [![FastLed][FastLed]][FastLed-url]
+* [![NeoMatrix][NeoMatrix]][NeoMatrix-url]
+* [![AutoConnect][AutoConnect]][AutoConnect-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -228,3 +227,15 @@ Use this space to list resources you find helpful and would like to give credit 
 [product-screenshot]: docs/awtris.png
 [PlatformIO]: https://img.shields.io/badge/platformio.org-000000?style=for-the-badge&logo=platformio&logoColor=orange
 [PlatformIO-url]: https://platformio.org/
+[ESP32]: https://img.shields.io/badge/espressif.com-000000?style=for-the-badge&logo=espressif.com&logoColor=red
+[ESP32-url]: https://espressif.com/en/products/socs/esp32
+[MelodyPlayer]: https://img.shields.io/badge/github.com-000000?style=for-the-badge&logo=github&logoColor=black
+[MelodyPlayer-url]: https://github.com/fabianoriccardi/melody-player
+[ESP32Wiimote]: https://img.shields.io/badge/github.com-000000?style=for-the-badge&logo=github&logoColor=black
+[ESP32Wiimote-url]: https://github.com/hrgraf/ESP32Wiimote
+[FastLed]: https://img.shields.io/badge/github.com-000000?style=for-the-badge&logo=github&logoColor=black
+[FastLed-url]: https://github.com/FastLED/FastLED
+[NeoMatrix]: https://img.shields.io/badge/github.com-000000?style=for-the-badge&logo=github&logoColor=black
+[NeoMatrix-url]: https://github.com/marcmerlin/FastLED_NeoMatrix
+[AutoConnect]: https://img.shields.io/badge/github.com-000000?style=for-the-badge&logo=github&logoColor=black
+[AutoConnect-url]: https://github.com/hieromon/AutoConnect
