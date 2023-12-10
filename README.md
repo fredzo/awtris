@@ -136,9 +136,14 @@ Available backgrounds are :
 
 For Two Player mode you will need 2 [Ulanzi Desktop Clock](https://www.ulanzi.com/products/ulanzi-pixel-smart-clock-2882) and 2 [Wiimote](https://en.wikipedia.org/wiki/Wii_Remote).
 While the Wiimote are connected to Awtris module via Bluetooth, the communication between the two Awtris modules will run through the Wifi network.
-For that you will need to setup Wifi for each Awtris with [Autoconnect]([AutoConnect-url]) :
+For that you will need to setup Wifi for each Awtris with [Autoconnect](https://hieromon.github.io/AutoConnect) :
+1. Turn on your Awitris device
+2. Connect your Wiimote (needed for the Wifi stack to work properly in shared mode with Bluetooth)
+2. Use your phone or laptop to connect to the "Awtrix" Wifi Access Point
+3. Enter your Wifi password in the <a href="https://en.wikipedia.org/wiki/Captive_portal">captive portal</a> using the [AutoConnect menu](https://hieromon.github.io/AutoConnect/menu.html). 
+4. Wait for the password to be saved in the NVS filesystem (if password has not been saved uppon restart, run the procedure one more time)
 
-
+<div align="center"><img alt="Overview" width="460" src="docs/ov.png" />&emsp;&emsp;&emsp;<img alt="Captiveportal" width="182" src="docs/ov.gif" /></div>
 
 <!-- BUILD AND INSTALL -->
 ## Build And Install
