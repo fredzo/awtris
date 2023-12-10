@@ -70,9 +70,9 @@
 ![Awtris][product-screenshot]
 
 This project is a Tetris game designed to run on an [Ulanzi Desktop Clock](https://www.ulanzi.com/products/ulanzi-pixel-smart-clock-2882) paired with
-a [Wiimote](https://en.wikipedia.org/wiki/Wii_Remote) controller for game conmands.
+a [Wiimote](https://en.wikipedia.org/wiki/Wii_Remote) controller for game commands.
 
-It's inpired by the work of [Aaron Liddiment](https://github.com/AaronLiddiment) and [Scott Marley](https://www.youtube.com/watch?v=cqmWfE1DSyM).
+It's inspired by the work of [Aaron Liddiment](https://github.com/AaronLiddiment) and [Scott Marley](https://www.youtube.com/watch?v=cqmWfE1DSyM).
 
 
 <!--p align="right">(<a href="#readme-top">back to top</a>)</p-->
@@ -99,16 +99,18 @@ This project is built this frameworks/libraries:
 ### Single Player Mode
 
 The simplest way to use Awitrix is to run it in single player mode.
-For that you need one [Ulanzi Desktop Clock](https://www.ulanzi.com/products/ulanzi-pixel-smart-clock-2882) and one [Wiimote](https://en.wikipedia.org/wiki/Wii_Remote).
-_See <a href="#build-and-install">Build And Install</a> for installation procedure.
+For that you need **one** [Ulanzi Desktop Clock](https://www.ulanzi.com/products/ulanzi-pixel-smart-clock-2882) and **one** [Wiimote](https://en.wikipedia.org/wiki/Wii_Remote).
+
+_See <a href="#build-and-install">Build And Install</a> for installation procedure._
 
 Once Awtris device is turned on :
-1. Press the "1" and "2" buttons on Wii Remote
+1. Press the "1" and "2" buttons on the Wiimote
 2. The LED1 will be on when they have finished connecting  
 <img width="30%" src="./docs/remocon_led1_on.png" />
 
 You can now start a new game by pressing "1" or "2" button.
-Hold the Wiimote horizontally and use "<", ">" and "v" keys to move Tertrominoes.
+
+Hold the Wiimote horizontally and use "<", ">" and "v" keys to move Tertrominoes and "1" or "2" buttons to rotate Tetrominoes.
 
 ### Settings
 
@@ -123,72 +125,72 @@ Adjust the volume of the buzzer by holding "B" (trigger) button and pressing "+"
 #### Background effect
 
 Change the effect displayed on the board's background by pressing "+" or "-" buttons.
+
 Available backgrounds are :
-1. NONE 
-2. PLAIN
-3. SWIMLANES
-3. CHESSBOARD
-4. STRIPES
-5. WAVES
-6. PLASMA 
+1. None 
+2. Plain
+3. Swim lanes
+3. Chessboard
+4. Stripes
+5. Waves
+6. Plasma 
 
 ### Two Player Mode
 
-For Two Player mode you will need 2 [Ulanzi Desktop Clock](https://www.ulanzi.com/products/ulanzi-pixel-smart-clock-2882) and 2 [Wiimote](https://en.wikipedia.org/wiki/Wii_Remote).
-While the Wiimote are connected to Awtris module via Bluetooth, the communication between the two Awtris modules will run through the Wifi network.
-For that you will need to setup Wifi for each Awtris with [Autoconnect](https://hieromon.github.io/AutoConnect) :
+For Two Player mode you will need **2** [Ulanzi Desktop Clocks](https://www.ulanzi.com/products/ulanzi-pixel-smart-clock-2882) and **2** [Wiimotes](https://en.wikipedia.org/wiki/Wii_Remote).
+While the Wiimote is connected to Awtris module via Bluetooth, the communication between the two Awtris modules will run through the Wifi network.
+For that you will need to setup Wifi for each Awtris device with [Autoconnect](https://hieromon.github.io/AutoConnect) :
 1. Turn on your Awitris device
 2. Connect your Wiimote (needed for the Wifi stack to work properly in shared mode with Bluetooth)
 2. Use your phone or laptop to connect to the "Awtrix" Wifi Access Point
 3. Enter your Wifi password in the <a href="https://en.wikipedia.org/wiki/Captive_portal">captive portal</a> using the [AutoConnect menu](https://hieromon.github.io/AutoConnect/menu.html). 
-4. Wait for the password to be saved in the NVS filesystem (if password has not been saved uppon restart, run the procedure one more time)
+4. Wait for a few seconds for the password to be saved in the NVS memory (if password has not been saved upon restart, run the procedure one more time)
 
 <div align="center"><img alt="Overview" width="460" src="docs/ov.png" />&emsp;&emsp;&emsp;<img alt="Captiveportal" width="182" src="docs/ov.gif" /></div>
+
+
+Once both Awtris devices are on and connected to the same Wifi network, press "Home" button on one of the remotes.
+
+This will prompt for a 2 player game on the second device.
+
+Just press "1" or "2" button on the second device to start the 2 player game.
+
+In 2 player mode, each time a player manages 2, 3 or 4 lines at a time, the second player will receive  1, 2 or 4 lines at the bottom of his board.
+
+The game ends whenever one of the players fills his screen.
 
 <!-- BUILD AND INSTALL -->
 ## Build And Install
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+### Build
 
-### Prerequisites
-
-This is an example of how to list things you need to use the software and how to install them.
-* npm
+To build the project, you just have to run **Build** command in PlatformIO.
   ```sh
-  npm install npm@latest -g
+  Build
   ```
 
 ### Installation
 
-_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
-
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+Installation is performed with **Upload** or **Upload and Monitor** commands in PlatformIO while the Awtris device is connected via USB.
    ```sh
-   git clone https://github.com/your_username_/Project-Name.git
+   Upload and Monitor
    ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
-
-<!--p align="right">(<a href="#readme-top">back to top</a>)</p-->
 
 <!-- ROADMAP -->
 ## Roadmap
 
-- [x] Add Changelog
-- [x] Add back to top links
-- [ ] Add Additional Templates w/ Examples
-- [ ] Add "components" document to easily copy & paste sections of the readme
-- [ ] Multi-language Support
-    - [ ] Chinese
-    - [ ] Spanish
+- [x] Tetris game port to Awtris device using FastLed NeoMatrix
+- [x] Connection to Wiimote as a gamepad
+- [x] Tetris Music and sound effects using MelodyPlayer library (modified version to support tempo change an volume change)
+- [x] Change buzzer volume and LED brightness using Wiimote
+- [x] Change background effect using Wiimote
+- [x] Save settings (volume, brightness, background effect, high score) to NVS memory
+- [x] Connect the device to Wifi with AutoConnect
+- [x] 2 Player mode
+- [ ] Documentation
+    - [x] English Readme
+    - [ ] French Readme 
+    - [ ] French Tutorial to create a Tetris game
 
 See the [open issues](https://github.com/fredzo/awtris/issues) for a full list of proposed features (and known issues).
 
