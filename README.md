@@ -74,7 +74,7 @@ a [Wiimote](https://en.wikipedia.org/wiki/Wii_Remote) controller for game comman
 
 It's inspired by the work of [Aaron Liddiment](https://github.com/AaronLiddiment) and [Scott Marley](https://www.youtube.com/watch?v=cqmWfE1DSyM).
 
-<img width="50%" src="./docs/awtris-in-action-jpg" />
+<img width="50%" src="./docs/awtris-in-action.jpg" />
 
 <!--p align="right">(<a href="#readme-top">back to top</a>)</p-->
 
