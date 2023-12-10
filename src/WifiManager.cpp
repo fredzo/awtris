@@ -122,7 +122,7 @@ void wifiManagerStart()
   config.autoReset = false;
   config.autoRise = true;
   config.portalTimeout = 1;     // Don't block on AP mode
-  config.beginTimeout = 4000;   // Only wait 3s at wifi begin not to block Sarsat JRX setartup
+  config.beginTimeout = 5000;   // Only wait 5s at wifi begin not to block setartup
   config.autoReconnect = true;  // Automatic only if we have saved credentials
   config.reconnectInterval = 0; // Only reconnect on 1st connection failure
   config.retainPortal = true;
