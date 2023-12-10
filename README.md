@@ -74,12 +74,13 @@ a [Wiimote](https://en.wikipedia.org/wiki/Wii_Remote) controller for game comman
 
 It's inspired by the work of [Aaron Liddiment](https://github.com/AaronLiddiment) and [Scott Marley](https://www.youtube.com/watch?v=cqmWfE1DSyM).
 
+<img width="50%" src="./docs/awtris-in-action-jpg" />
 
 <!--p align="right">(<a href="#readme-top">back to top</a>)</p-->
 
 
 
-### Built With
+## Built With
 
 This project is built this frameworks/libraries:
 * [![PlatformIO][PlatformIO]][PlatformIO-url]
@@ -142,7 +143,7 @@ While the Wiimote is connected to Awtris module via Bluetooth, the communication
 For that you will need to setup Wifi for each Awtris device with [Autoconnect](https://hieromon.github.io/AutoConnect) :
 1. Turn on your Awitris device
 2. Connect your Wiimote (needed for the Wifi stack to work properly in shared mode with Bluetooth)
-2. Use your phone or laptop to connect to the "Awtrix" Wifi Access Point
+2. Use your phone or laptop to connect to the "Awtris" Wifi Access Point
 3. Enter your Wifi password in the <a href="https://en.wikipedia.org/wiki/Captive_portal">captive portal</a> using the [AutoConnect menu](https://hieromon.github.io/AutoConnect/menu.html). 
 4. Wait for a few seconds for the password to be saved in the NVS memory (if password has not been saved upon restart, run the procedure one more time)
 
