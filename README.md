@@ -70,12 +70,12 @@
 ![Awtris][product-screenshot]
 
 This project is a Tetris game designed to run on an [Ulanzi Desktop Clock](https://www.ulanzi.com/products/ulanzi-pixel-smart-clock-2882) paired with
-Wiimote controller for game conmands.
+a [Wiimote](https://en.wikipedia.org/wiki/Wii_Remote) controller for game conmands.
 
 It's inpired by the work of [Aaron Liddiment](https://github.com/AaronLiddiment) and [Scott Marley](https://www.youtube.com/watch?v=cqmWfE1DSyM).
 
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<!--p align="right">(<a href="#readme-top">back to top</a>)</p-->
 
 
 
@@ -90,12 +90,58 @@ This project is built this frameworks/libraries:
 * [![NeoMatrix][NeoMatrix]][NeoMatrix-url]
 * [![AutoConnect][AutoConnect]][AutoConnect-url]
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<!--p align="right">(<a href="#readme-top">back to top</a>)</p-->
+
+
+<!-- USAGE EXAMPLES -->
+## Usage
+
+### Single Player Mode
+
+The simplest way to use Awitrix is to run it in single player mode.
+For that you need one [Ulanzi Desktop Clock](https://www.ulanzi.com/products/ulanzi-pixel-smart-clock-2882) and one [Wiimote](https://en.wikipedia.org/wiki/Wii_Remote).
+_See <a href="#build-and-install">Build And Install</a> for installation procedure.
+
+Once Awtris device is turned on :
+1. Press the "1" and "2" buttons on Wii Remote
+2. The LED1 will be on when they have finished connecting  
+<img width="30%" src="./docs/remocon_led1_on.png" />
+
+You can now start a new game by pressing "1" or "2" button.
+Hold the Wiimote horizontally and use "<", ">" and "v" keys to move Tertrominoes.
+
+### Settings
+
+#### Brightness
+
+Adjust leds brightness by holding "A" button and pressing "+" or "-".
+
+#### Buzzer volume
+
+Adjust the volume of the buzzer by holding "B" (trigger) button and pressing "+" or "-".
+
+#### Background effect
+
+Change the effect displayed on the board's background by pressing "+" or "-" buttons.
+Available backgrounds are :
+1. NONE 
+2. PLAIN
+3. SWIMLANES
+3. CHESSBOARD
+4. STRIPES
+5. WAVES
+6. PLASMA 
+
+### Two Player Mode
+
+For Two Player mode you will need 2 [Ulanzi Desktop Clock](https://www.ulanzi.com/products/ulanzi-pixel-smart-clock-2882) and 2 [Wiimote](https://en.wikipedia.org/wiki/Wii_Remote).
+While the Wiimote are connected to Awtris module via Bluetooth, the communication between the two Awtris modules will run through the Wifi network.
+For that you will need to setup Wifi for each Awtris with [Autoconnect]([AutoConnect-url]) :
 
 
 
-<!-- GETTING STARTED -->
-## Getting Started
+<!-- BUILD AND INSTALL -->
+## Build And Install
 
 This is an example of how you may give instructions on setting up your project locally.
 To get a local copy up and running follow these simple example steps.
@@ -126,20 +172,7 @@ _Below is an example of how you can instruct your audience on installing and set
    const API_KEY = 'ENTER YOUR API';
    ```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- USAGE EXAMPLES -->
-## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
+<!--p align="right">(<a href="#readme-top">back to top</a>)</p-->
 
 <!-- ROADMAP -->
 ## Roadmap
@@ -154,7 +187,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 See the [open issues](https://github.com/fredzo/awtris/issues) for a full list of proposed features (and known issues).
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<!--p align="right">(<a href="#readme-top">back to top</a>)</p-->
 
 
 
@@ -172,7 +205,7 @@ Don't forget to give the project a star! Thanks again!
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<!--p align="right">(<a href="#readme-top">back to top</a>)</p-->
 
 
 
@@ -181,7 +214,7 @@ Don't forget to give the project a star! Thanks again!
 
 Distributed under the MIT License. See `LICENSE.txt` for more information.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<!--p align="right">(<a href="#readme-top">back to top</a>)</p-->
 
 
 
@@ -192,25 +225,8 @@ Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.c
 
 Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<!--p align="right">(<a href="#readme-top">back to top</a>)</p-->
 
-
-
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
-
-Use this space to list resources you find helpful and would like to give credit to. I've included a few of my favorites to kick things off!
-
-* [Choose an Open Source License](https://choosealicense.com)
-* [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
-* [Malven's Flexbox Cheatsheet](https://flexbox.malven.co/)
-* [Malven's Grid Cheatsheet](https://grid.malven.co/)
-* [Img Shields](https://shields.io)
-* [GitHub Pages](https://pages.github.com)
-* [Font Awesome](https://fontawesome.com)
-* [React Icons](https://react-icons.github.io/react-icons/search)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
