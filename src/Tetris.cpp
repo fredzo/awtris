@@ -211,67 +211,70 @@ void scoreCallback(int score)
   showYouLoseMessage(score);
 }
 
-void tetrisLoop(GamePad::Command command)
+void tetrisLoop(GamepadCommand* command)
 {
   if ((millis() - lastLoop) >= loopDelayMS)
   {
     lastLoop = millis();
     matrix->clear();
     
-    if((command.plus || command.minus))
+    if(command)
     {
-      if(command.menu)
-      { // Brightness change
-        if(command.plus)
-        {
-          if(brightness < 0xFF)
+      if((command->buttons[GamepadCommand::W_PLUS] || command->buttons[GamepadCommand::W_MINUS]))
+      {
+        if(command->buttons[GamepadCommand::W_A])
+        { // Brightness change
+          if(command->buttons[GamepadCommand::W_PLUS])
           {
-            brightness++;
-          }
-        }
-        else
-        {
-          if(brightness > 0)
-          {
-            brightness--;
-          }
-        }
-        matrix->setBrightness(brightness);
-        tetrisSettings->setBrigtness(brightness);
-      }
-      else if(command.trig)
-      { // Volume change
-        if(command.plus)
-        {
-          if(volume < 0xFF)
-          {
-            volume++;
-          }
-        }
-        else
-        {
-          if(volume > 0)
-          {
-            volume--;
-          }
-        }
-        tetrisMusicManager->setVolume(volume);
-        tetrisSettings->setVolume(volume);
-      }
-      else
-      { // Background change
-        if(millis()-lastPlusMinusCommand >= (COMMAND_REPEAT_DELAY*2))
-        {
-          lastPlusMinusCommand = millis();
-          if(command.plus)
-          {
-            bgEffectManager->nextEffect();
+            if(brightness < 0xFF)
+            {
+              brightness++;
+            }
           }
           else
           {
-            bgEffectManager->previousEffect();
+            if(brightness > 0)
+            {
+              brightness--;
+            }
           }
-          tetrisSettings->setBackgroundEffect(bgEffectManager->getBackgroundEffect());
+          matrix->setBrightness(brightness);
+          tetrisSettings->setBrigtness(brightness);
+        }
+        else if(command->buttons[GamepadCommand::W_B])
+        { // Volume change
+          if(command->buttons[GamepadCommand::W_PLUS])
+          {
+            if(volume < 0xFF)
+            {
+              volume++;
+            }
+          }
+          else
+          {
+            if(volume > 0)
+            {
+              volume--;
+            }
+          }
+          tetrisMusicManager->setVolume(volume);
+          tetrisSettings->setVolume(volume);
+        }
+        else
+        { // Background change
+          if(millis()-lastPlusMinusCommand >= (COMMAND_REPEAT_DELAY*2))
+          {
+            lastPlusMinusCommand = millis();
+            if(command->buttons[GamepadCommand::W_PLUS])
+            {
+              bgEffectManager->nextEffect();
+            }
+            else
+            {
+              bgEffectManager->previousEffect();
+            }
+            tetrisSettings->setBackgroundEffect(bgEffectManager->getBackgroundEffect());
+          }
         }
       }
     }
@@ -281,9 +284,9 @@ void tetrisLoop(GamePad::Command command)
 
     if (gameState == WAIT_START || gameState == GAME_OVER || gameState == ASK_JOIN)
     { // Waiting for the player (+ prevent from starting a new game to soon after game over)
-      if((millis() > (gameOverTime + GAME_OVER_WAIT_TIME)) && command.hasCommand())
+      if((millis() > (gameOverTime + GAME_OVER_WAIT_TIME)) && command)
       { 
-        if(command.home)
+        if(command->buttons[GamepadCommand::W_HOME])
         { // Invite for multiplayer
           gameState = WAIT_JOIN;
           showWaitPlayer2Message();
@@ -300,13 +303,13 @@ void tetrisLoop(GamePad::Command command)
             gameState = PLAYING_SINGLE;
             startNewGame(true);
           }
-          command = GamePad::NO_COMMAND;
+          command = NULL;
         }
       }
     }
     else if(gameState == WAIT_JOIN)
     { 
-      if(command.a)
+      if(command->buttons[GamepadCommand::W_ONE])
       { // Go back to wait single player if a is pressed
         gameState = WAIT_START;
         showWelcomeMessage();
@@ -336,12 +339,12 @@ void tetrisLoop(GamePad::Command command)
       {
         if (board->hasTetrominoe()) // We have a current Tetrominoe
         { // Check for user input
-          if ( command.a || command.b)
+          if ( command->buttons[GamepadCommand::W_ONE] || command->buttons[GamepadCommand::W_TWO])
           {
             if(millis()-lastRotateCommand >= COMMAND_REPEAT_DELAY)
             {
               lastRotateCommand = millis();
-              if(command.a)
+              if(command->buttons[GamepadCommand::W_ONE])
               { // Rotate left
                 board->rotateTetrominoeLeft();
               }
@@ -352,7 +355,7 @@ void tetrisLoop(GamePad::Command command)
             }
           }
           
-          if (command.left)
+          if (command->buttons[GamepadCommand::W_DPAD_LEFT])
           { // Go left and check if not already on the border
             if(millis()-lastLeftCommand >= COMMAND_REPEAT_DELAY)
             {
@@ -360,7 +363,7 @@ void tetrisLoop(GamePad::Command command)
               board->moveTetrominoeLeft();
             }
           }
-          else if ( command.right) 
+          else if ( command->buttons[GamepadCommand::W_DPAD_RIGHT]) 
           { // Go right and check if not already on the border
             if(millis()-lastRightCommand >= COMMAND_REPEAT_DELAY)
             {
@@ -368,7 +371,7 @@ void tetrisLoop(GamePad::Command command)
               board->moveTetrominoeRight();
             }
           }
-          if ( command.down ) 
+          if ( command->buttons[GamepadCommand::W_DPAD_DOWN] ) 
           { // Go down
             tetrominoeFallCountdown = 1; // Force drop on next cycle
           }

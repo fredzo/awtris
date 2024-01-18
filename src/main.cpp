@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <AwtrisConf.h>
-#include <GamePad.h>
+#include <Esp32GamepadHost.h>
 #include <Adafruit_GFX.h>
 #include <FastLED.h>
 #include <FastLED_NeoMatrix.h>
@@ -10,8 +10,8 @@
 #include <MultiPlayer.h>
 #include <Settings.h>
 
-/// GamePad instance
-GamePad* gamePad;
+/// Gamepad host
+Esp32GamepadHost* tetrisGamepadHost;
 
 /// Text Manager instance
 TextManager* textManager;
@@ -69,9 +69,9 @@ void setup() {
   multiPlayer = MultiPlayer::getMultiPlayer();
   multiPlayer->init();
 
-  // GamePad init
-  gamePad = new GamePad();
-  gamePad->init();
+  // Init gamepad host
+  tetrisGamepadHost = Esp32GamepadHost::getEsp32GamepadHost();
+  tetrisGamepadHost->init();
 
   // Settings init
   settings = Settings::getSettings();
@@ -119,8 +119,8 @@ int pass = 0;
 void loop() {
 
 
-  gamePad->processTasks();
-  GamePad::Command command = gamePad->getCommand();
+  tetrisGamepadHost->processTasks();
+  GamepadCommand* command = tetrisGamepadHost->getCommand();
 
   // Get current button state.
   boolean newButtonState = digitalRead(CENTER_BUTTON_PIN);
@@ -132,11 +132,6 @@ void loop() {
     // Check if button is still low after debounce.
     newButtonState = digitalRead(CENTER_BUTTON_PIN);
     if(newButtonState == LOW) {      // Yes, still low
-      if(!command.hasCommand())
-      {
-        command = GamePad::Command();
-        command.a = true;
-      }
         //Serial.println("Change special effect !");
         //effectManager->changeSpecialEffect(true);
     }
