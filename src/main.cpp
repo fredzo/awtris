@@ -69,13 +69,13 @@ void setup() {
   multiPlayer = MultiPlayer::getMultiPlayer();
   multiPlayer->init();
 
-  // Init gamepad host
-  tetrisGamepadHost = Esp32GamepadHost::getEsp32GamepadHost();
-  tetrisGamepadHost->init();
-
   // Settings init
   settings = Settings::getSettings();
   settings->init();
+
+  // Init gamepad host
+  tetrisGamepadHost = Esp32GamepadHost::getEsp32GamepadHost();
+  tetrisGamepadHost->init();
 
   // MusicManager init
   musicManager = MusicManager::getMusicManager();

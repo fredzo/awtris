@@ -284,7 +284,7 @@ void tetrisLoop(GamepadCommand* command)
 
     if (gameState == WAIT_START || gameState == GAME_OVER || gameState == ASK_JOIN)
     { // Waiting for the player (+ prevent from starting a new game to soon after game over)
-      if((millis() > (gameOverTime + GAME_OVER_WAIT_TIME)) && command)
+      if(command && (millis() > (gameOverTime + GAME_OVER_WAIT_TIME)) && command->hasCommand())
       { 
         if(command->buttons[GamepadCommand::W_HOME])
         { // Invite for multiplayer
@@ -309,7 +309,7 @@ void tetrisLoop(GamepadCommand* command)
     }
     else if(gameState == WAIT_JOIN)
     { 
-      if(command->buttons[GamepadCommand::W_ONE])
+      if(command && command->buttons[GamepadCommand::W_ONE])
       { // Go back to wait single player if a is pressed
         gameState = WAIT_START;
         showWelcomeMessage();
@@ -339,12 +339,12 @@ void tetrisLoop(GamepadCommand* command)
       {
         if (board->hasTetrominoe()) // We have a current Tetrominoe
         { // Check for user input
-          if ( command->buttons[GamepadCommand::W_ONE] || command->buttons[GamepadCommand::W_TWO])
+          if (command && (command->buttons[GamepadCommand::W_ONE] || command->buttons[GamepadCommand::W_TWO]))
           {
             if(millis()-lastRotateCommand >= COMMAND_REPEAT_DELAY)
             {
               lastRotateCommand = millis();
-              if(command->buttons[GamepadCommand::W_ONE])
+              if(command && command->buttons[GamepadCommand::W_ONE])
               { // Rotate left
                 board->rotateTetrominoeLeft();
               }
@@ -355,7 +355,7 @@ void tetrisLoop(GamepadCommand* command)
             }
           }
           
-          if (command->buttons[GamepadCommand::W_DPAD_LEFT])
+          if (command && command->buttons[GamepadCommand::W_DPAD_LEFT])
           { // Go left and check if not already on the border
             if(millis()-lastLeftCommand >= COMMAND_REPEAT_DELAY)
             {
@@ -363,7 +363,7 @@ void tetrisLoop(GamepadCommand* command)
               board->moveTetrominoeLeft();
             }
           }
-          else if ( command->buttons[GamepadCommand::W_DPAD_RIGHT]) 
+          else if (command && command->buttons[GamepadCommand::W_DPAD_RIGHT]) 
           { // Go right and check if not already on the border
             if(millis()-lastRightCommand >= COMMAND_REPEAT_DELAY)
             {
@@ -371,7 +371,7 @@ void tetrisLoop(GamepadCommand* command)
               board->moveTetrominoeRight();
             }
           }
-          if ( command->buttons[GamepadCommand::W_DPAD_DOWN] ) 
+          if (command &&  command->buttons[GamepadCommand::W_DPAD_DOWN] ) 
           { // Go down
             tetrominoeFallCountdown = 1; // Force drop on next cycle
           }
