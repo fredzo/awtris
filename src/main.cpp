@@ -74,8 +74,12 @@ void setup() {
   settings->init();
 
   // Init gamepad host
+  Config config = Esp32GamepadHost::createDefaultConfig();
+  config.filterAccel=true;
+  config.filterTouchpad=true;
+  config.maxGamepads = 1;
   gamepadHost = Esp32GamepadHost::getEsp32GamepadHost();
-  gamepadHost->init();
+  gamepadHost->init(config);
 
   // MusicManager init
   musicManager = MusicManager::getMusicManager();
