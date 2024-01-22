@@ -4,12 +4,12 @@
 #include <AwtrisConf.h>
 #include <FastLED_NeoMatrix.h>
 #include <TextManager.h>
-#include <GamepadCommand.h>
+#include <Esp32GamepadHost.h>
 #include <MusicManager.h>
 #include <Settings.h>
 #include <MultiPlayer.h>
 
-void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicManager * musicManager, Settings * settings, MultiPlayer * multiPlayer);
+void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicManager * musicManager, Settings * settings, MultiPlayer * multiPlayer, Esp32GamepadHost* gamepadHost);
 void tetrisLoop(GamepadCommand* command);
 
 // Callbacks for multiplayer mode

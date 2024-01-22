@@ -22,6 +22,7 @@ Settings * tetrisSettings;
 Board* board; 
 BgEffectManager* bgEffectManager;
 MultiPlayer* tetrisMultiPlayer;
+Esp32GamepadHost* tetrisGamepadHost;
 
 bool playerOne = true;
 bool inviteReceived = false;
@@ -125,7 +126,7 @@ void flashCountdownCallback(int count)
   }
 }
 
-void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicManager * musicManager, Settings * settings, MultiPlayer * multiPlayer)
+void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicManager * musicManager, Settings * settings, MultiPlayer * multiPlayer, Esp32GamepadHost* gamepadHost)
 {
   matrix = ledMatrix;
   tetrisMusicManager = musicManager;
@@ -133,6 +134,7 @@ void tetrisInit(FastLED_NeoMatrix * ledMatrix, TextManager * textManager, MusicM
   tetrisTextManager->setFlashCallback(flashCountdownCallback);
   tetrisSettings = settings;
   tetrisMultiPlayer = multiPlayer;
+  tetrisGamepadHost = gamepadHost;
   board = new Board();
   bgEffectManager = new BgEffectManager();
   // Restore settings
@@ -195,6 +197,7 @@ void addLineCallback(int numLines)
   {
     tetrisMusicManager->playPenaltySound(numLines);
     board->addPenaltyLines(numLines);
+    tetrisGamepadHost->setRumble(0xFF,0xFF,1000*numLines);
   } 
 }
 
@@ -411,6 +414,8 @@ void tetrisLoop(GamepadCommand* command)
               tetrisMusicManager->playLineSound(numlines);
               // Update tempo
               tetrisMusicManager->increaseTempo(numlines);
+              // Rumble
+              tetrisGamepadHost->setRumble(0x7F,0x7F,250*numlines);
               if (numlines == 1)
               {
                 lastScore += 4;
@@ -442,6 +447,9 @@ void tetrisLoop(GamepadCommand* command)
           }
           // Start the new block
           deal();
+          // Show next color on gamepad
+          CRGB nextColor = TETROMINOE_COLORS[getNextTetrominoe()];
+          tetrisGamepadHost->setLed(GamepadColor(nextColor.r,nextColor.g,nextColor.b),500);
           Tetrominoe::Type j = getCurrentTetrominoe();
           if(board->addTetrominoe(j))
           { // New block added, init drop delay
@@ -452,6 +460,7 @@ void tetrisLoop(GamepadCommand* command)
           { // New Tetrominoe could not be added => Game over
             tetrominoeFallCountdown = 2;
             tetrisMusicManager->playGameOverSound();
+            tetrisGamepadHost->setRumble(0xFF,0xFF,2000);
             if(gameState == PLAYING_MULTI)
             {
               showYouLoseMessage(0);

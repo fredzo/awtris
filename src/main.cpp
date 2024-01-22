@@ -11,7 +11,7 @@
 #include <Settings.h>
 
 /// Gamepad host
-Esp32GamepadHost* tetrisGamepadHost;
+Esp32GamepadHost* gamepadHost;
 
 /// Text Manager instance
 TextManager* textManager;
@@ -74,8 +74,8 @@ void setup() {
   settings->init();
 
   // Init gamepad host
-  tetrisGamepadHost = Esp32GamepadHost::getEsp32GamepadHost();
-  tetrisGamepadHost->init();
+  gamepadHost = Esp32GamepadHost::getEsp32GamepadHost();
+  gamepadHost->init();
 
   // MusicManager init
   musicManager = MusicManager::getMusicManager();
@@ -100,7 +100,7 @@ void setup() {
   textManager->setFlashSpeed(4);
 
 
-  tetrisInit(neoMatrix, textManager, musicManager, settings, multiPlayer);
+  tetrisInit(neoMatrix, textManager, musicManager, settings, multiPlayer, gamepadHost);
 
 
 }
@@ -119,8 +119,8 @@ int pass = 0;
 void loop() {
 
 
-  tetrisGamepadHost->processTasks();
-  GamepadCommand* command = tetrisGamepadHost->getCommand();
+  gamepadHost->processTasks();
+  GamepadCommand* command = gamepadHost->getCommand();
 
   // Get current button state.
   boolean newButtonState = digitalRead(CENTER_BUTTON_PIN);
